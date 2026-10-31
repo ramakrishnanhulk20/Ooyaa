@@ -1,0 +1,141 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design tokens: every colour lives here and in tailwind.config.js */
+:root {
+  --paper: #F5F5F3;
+  --slip: #FFFFFF;
+  --ink: #12193F;
+  --ink-2: #575A64;
+  --ink-3: #8A8D97;
+  --rule: #D9D9D4;
+  --stamp: #D23A24;
+  --paid: #1A7F6B;
+  --held: #5B6B8C;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* Prevent iOS from boosting font sizes on rotation */
+  -webkit-text-size-adjust: 100%;
+  /* Prevent horizontal scroll at all viewport widths */
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  background-color: var(--paper);
+  color: var(--ink-2);
+  min-height: 100dvh;
+  /* Prevent horizontal scroll */
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Perforation left-edge mask for payslips.
+   A column of 6px circular holes every 14px, clipped to the left 20px strip. */
+.perf-mask {
+  mask-image: repeating-radial-gradient(
+    circle at 10px 0px,
+    transparent 0px,
+    transparent 3px,
+    black 3px,
+    black 14px
+  );
+  mask-size: 20px 14px;
+  mask-repeat: repeat-y;
+}
+
+/* Dot field background for the right hero half.
+   Applied to a positioned div so it can be masked with a gradient fade. */
+.dot-field {
+  background-image: radial-gradient(circle, var(--ink) 1px, transparent 1px);
+  background-size: 14px 14px;
+  opacity: 0.06;
+}
+
+/* Animated link underline: draws from left over 200ms. */
+.link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-position: 0% 100%;
+  background-size: 0% 1px;
+  background-repeat: no-repeat;
+  transition: background-size 200ms ease;
+  text-decoration: none;
+}
+.link-underline:hover {
+  background-size: 100% 1px;
+}
+
+/* Secondary button base (transparent + 1px --ink border). */
+.btn-secondary {
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  transition: background 120ms ease;
+}
+.btn-secondary:hover:not(:disabled) {
+  background: rgba(18, 25, 63, 0.04);
+}
+
+/* Disabled state for all buttons. */
+button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Studio badge: fixed bottom-right on desktop, centred static on mobile.
+   The inline position styles in main.tsx are replaced by this class so the
+   badge does not cover the card on narrow viewports. */
+.studio-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #1B3158;
+  text-decoration: none;
+  cursor: pointer;
+  background: rgba(172, 198, 233, 0.85);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  backdrop-filter: blur(12px) saturate(180%);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 20px rgba(27, 49, 88, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 9999;
+}
+
+@media (max-width: 767px) {
+  .studio-badge {
+    position: static;
+    width: fit-content;
+    margin: 32px auto 24px;
+  }
+}
+
+/* Draft preview: fade-in animation for changed values. */
+@keyframes fade-in-value {
+  from { opacity: 0.4; }
+  to   { opacity: 1; }
+}
+.fade-value {
+  animation: fade-in-value 150ms ease forwards;
+}
+
+/* Pending button sweep animation for the run-payday indeterminate bar. */
+@keyframes btn-sweep {
+  0%   { left: -40%; }
+  100% { left: 100%; }
+}

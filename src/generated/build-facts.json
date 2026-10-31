@@ -1,0 +1,16 @@
+{
+  "foundry": {
+    "suite": "unit and invariant",
+    "passed": 89,
+    "failed": 0
+  },
+  "fork": {
+    "tests": 6,
+    "ranHere": false
+  },
+  "app": {
+    "passed": 228,
+    "failed": 0
+  },
+  "generatedAt": "2026-10-31T05:58:12.739Z"
+}

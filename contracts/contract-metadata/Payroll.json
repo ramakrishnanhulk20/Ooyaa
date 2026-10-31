@@ -1,0 +1,1121 @@
+{
+  "contractAddress": "0x1b31ea6ce9c6ad70444c476166eb219026e6c1d3",
+  "network": "ARC-TESTNET",
+  "deployerWalletId": "3c2464b2-8369-52e2-a782-800bbeca5396",
+  "contract_code_path": "/home/user/app/contracts/Payroll.sol",
+  "contract_compiled_code_path": "/home/user/app/contracts/out/Payroll.sol/Payroll.json",
+  "contract_network_and_links": {
+    "Arc Testnet": "https://explorer.testnet.arc.io/address/0x1b31ea6ce9c6ad70444c476166eb219026e6c1d3"
+  },
+  "contract_deployments": [
+    {
+      "chain": "Arc Testnet",
+      "address": "0x1b31ea6ce9c6ad70444c476166eb219026e6c1d3",
+      "explorerUrl": "https://explorer.testnet.arc.io/address/0x1b31ea6ce9c6ad70444c476166eb219026e6c1d3",
+      "txHash": "0x50de957bf04be05b89b4d1932436313b11c07777d1537fb378401658cd686089",
+      "deployedAt": "2026-10-28T04:19:40.062Z"
+    },
+    {
+      "chain": "Arc Testnet",
+      "address": "0xd52810a4b3c705e705e9ec9304227844e06b63d8",
+      "explorerUrl": "https://explorer.testnet.arc.io/address/0xd52810a4b3c705e705e9ec9304227844e06b63d8",
+      "txHash": "0x26494ebd75443faa9e1db09d2c6f75b75da158df9fcaf414e5b9f92324ee3de5",
+      "deployedAt": "2026-10-27T05:07:43.554Z"
+    },
+    {
+      "chain": "Arc Testnet",
+      "address": "0x17d3b8d4b15a3ae98f0cac5d13d1186e5f2813d4",
+      "explorerUrl": "https://explorer.testnet.arc.io/address/0x17d3b8d4b15a3ae98f0cac5d13d1186e5f2813d4",
+      "txHash": "0x27acf78725e0bd07a07fb10c6b80444556085985af5fb9690921575055f48b8c",
+      "deployedAt": "2026-10-26T15:05:30.885Z"
+    },
+    {
+      "chain": "Arc Testnet",
+      "address": "0x27480ffd23a3dbd3900a5c85dc0d536f5f033b9e",
+      "explorerUrl": "https://explorer.testnet.arc.io/address/0x27480ffd23a3dbd3900a5c85dc0d536f5f033b9e",
+      "txHash": "0x319450068127b57f0822b28217efeb4aa1381fe32ae468e94d677823d0ff6db3",
+      "deployedAt": "2026-10-26T14:41:33.567Z"
+    },
+    {
+      "chain": "Arc Testnet",
+      "address": "0x56a451304a3c307c11648fdf6a5da6952a593cdd",
+      "explorerUrl": "https://explorer.testnet.arc.io/address/0x56a451304a3c307c11648fdf6a5da6952a593cdd",
+      "txHash": "0x3cafe4c7ea5c3285e50e3911b6e722db752ca3621bb2804d84af83415b0f2131",
+      "deployedAt": "2026-10-25T14:46:11.942Z"
+    },
+    {
+      "chain": "Arc Testnet",
+      "address": "0xa0bd1bf078f566066105e786e8df8f29194cfc8d",
+      "explorerUrl": "https://explorer.testnet.arc.io/address/0xa0bd1bf078f566066105e786e8df8f29194cfc8d",
+      "txHash": "0x7b3d35b6ebf1d7d7f681672d0b99abc268dcae043a1b133389077d1f728375de",
+      "deployedAt": "2026-10-25T14:29:52.063Z"
+    },
+    {
+      "chain": "Arc Testnet",
+      "address": "0x2590e4381a630a0d9df6549f71312098d0870e56",
+      "explorerUrl": "https://explorer.testnet.arc.io/address/0x2590e4381a630a0d9df6549f71312098d0870e56",
+      "txHash": "0x8fc156339b4c7b309e4d8c25e4dd154f0ecb51522e29886fef47df6d274f32a0",
+      "deployedAt": "2026-10-25T10:15:08.199Z"
+    }
+  ],
+  "abi": [
+    {
+      "type": "constructor",
+      "inputs": [
+        {
+          "name": "employer_",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "payees",
+          "type": "address[]",
+          "internalType": "address[]"
+        },
+        {
+          "name": "amounts",
+          "type": "uint256[]",
+          "internalType": "uint256[]"
+        },
+        {
+          "name": "startTime_",
+          "type": "uint64",
+          "internalType": "uint64"
+        },
+        {
+          "name": "periodLength_",
+          "type": "uint64",
+          "internalType": "uint64"
+        },
+        {
+          "name": "tipPerRun_",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "acceptEmployer",
+      "inputs": [],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "addPayee",
+      "inputs": [
+        {
+          "name": "payee",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "amountOf",
+      "inputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "cancelEmployerTransfer",
+      "inputs": [],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "claim",
+      "inputs": [],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "claimable",
+      "inputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "close",
+      "inputs": [],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "closed",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "closedAt",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "dueNow",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "employer",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "freeBalance",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "fund",
+      "inputs": [
+        {
+          "name": "amount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "getPayees",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "addrs",
+          "type": "address[]",
+          "internalType": "address[]"
+        },
+        {
+          "name": "amts",
+          "type": "uint256[]",
+          "internalType": "uint256[]"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getState",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "s",
+          "type": "tuple",
+          "internalType": "struct Payroll.PayrollState",
+          "components": [
+            {
+              "name": "employer",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "pendingEmployer",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "startTime",
+              "type": "uint64",
+              "internalType": "uint64"
+            },
+            {
+              "name": "periodLength",
+              "type": "uint64",
+              "internalType": "uint64"
+            },
+            {
+              "name": "tipPerRun",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "periodTotal",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "nextUnpaid",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "startedPeriods",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "owed",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "freeBalance",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "balance",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "runway",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "totalDeferred",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "payeeCount",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "closed",
+              "type": "bool",
+              "internalType": "bool"
+            },
+            {
+              "name": "closedAt",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ]
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "indexPlusOne",
+      "inputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "isPayee",
+      "inputs": [
+        {
+          "name": "addr",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "nextPayday",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "nextUnpaid",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "owed",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "payeeCount",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "pendingEmployer",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "periodLength",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint64",
+          "internalType": "uint64"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "periodStart",
+      "inputs": [
+        {
+          "name": "n",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "periodTotal",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "removePayee",
+      "inputs": [
+        {
+          "name": "payee",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "run",
+      "inputs": [],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "runway",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "startTime",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint64",
+          "internalType": "uint64"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "startedPeriods",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "tipPerRun",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "totalDeferred",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "transferEmployer",
+      "inputs": [
+        {
+          "name": "newEmployer",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "updatePayee",
+      "inputs": [
+        {
+          "name": "payee",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "withdraw",
+      "inputs": [
+        {
+          "name": "amount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "event",
+      "name": "Claimed",
+      "inputs": [
+        {
+          "name": "payee",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "EmployerTransferCancelled",
+      "inputs": [
+        {
+          "name": "current",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "cancelled",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "EmployerTransferStarted",
+      "inputs": [
+        {
+          "name": "current",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "pending",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "EmployerTransferred",
+      "inputs": [
+        {
+          "name": "previous",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "current",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "Funded",
+      "inputs": [
+        {
+          "name": "from",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "PaydayRun",
+      "inputs": [
+        {
+          "name": "period",
+          "type": "uint256",
+          "indexed": true,
+          "internalType": "uint256"
+        },
+        {
+          "name": "runner",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "paid",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        },
+        {
+          "name": "deferred",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        },
+        {
+          "name": "tip",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "PayeeAdded",
+      "inputs": [
+        {
+          "name": "payee",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        },
+        {
+          "name": "fromPeriod",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "PayeeRemoved",
+      "inputs": [
+        {
+          "name": "payee",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "fromPeriod",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "PayeeUpdated",
+      "inputs": [
+        {
+          "name": "payee",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        },
+        {
+          "name": "fromPeriod",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "PayoutDeferred",
+      "inputs": [
+        {
+          "name": "payee",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "period",
+          "type": "uint256",
+          "indexed": true,
+          "internalType": "uint256"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "PayrollClosed",
+      "inputs": [
+        {
+          "name": "closedAt",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "PayslipIssued",
+      "inputs": [
+        {
+          "name": "payee",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "period",
+          "type": "uint256",
+          "indexed": true,
+          "internalType": "uint256"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "Withdrawn",
+      "inputs": [
+        {
+          "name": "to",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "error",
+      "name": "AlreadyClosed",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "AmountTooLarge",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "Closed",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "DuplicatePayee",
+      "inputs": [
+        {
+          "name": "payee",
+          "type": "address",
+          "internalType": "address"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "EmptyPayeeList",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InsufficientGasForRun",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidNewEmployer",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "LastPayee",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "LengthMismatch",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "NoPendingTransfer",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "NotEmployer",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "NotPendingEmployer",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "NothingDue",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "NothingToClaim",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "PayeeIsThis",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "PayeeIsUsdc",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "PayeeNotFound",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "PeriodLengthTooLong",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "PeriodLengthTooShort",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "ReentrancyGuardReentrantCall",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "SafeERC20FailedOperation",
+      "inputs": [
+        {
+          "name": "token",
+          "type": "address",
+          "internalType": "address"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "SameEmployer",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "ScheduleLocked",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "StartTimeTooEarly",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "StartTimeTooLate",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "TipTooLarge",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "TooManyPayees",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "Underfunded",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "WithdrawExceedsFree",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "WithdrawZero",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "ZeroAmount",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "ZeroEmployer",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "ZeroFundAmount",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "ZeroNewEmployer",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "ZeroPayee",
+      "inputs": []
+    }
+  ]
+}

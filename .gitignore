@@ -1,0 +1,25 @@
+# Dependencies and builds
+node_modules/
+dist/
+out/
+cache/
+broadcast/
+
+# Secrets: only the example is committed
+.env
+.env.*
+!.env.example
+
+# Arc Studio sandbox files
+.compass/
+.arc-studio/
+console.jsonl
+
+# Logs and editor files
+*.log
+.DS_Store
+.vscode/
+.idea/
+
+# Arc Studio staging copies of uploaded reference files
+context/
