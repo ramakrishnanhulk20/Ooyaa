@@ -129,7 +129,7 @@ Neither contract uses immutable variables, the factory takes no constructor argu
 
 ## What the app reads and writes
 
-All reads go to Arc mainnet through `https://rpc.mainnet.arc.io`, with a second public node used for the proof page's large log queries. Countdowns use the latest block's timestamp, not the browser clock. The check names C1 to C8 in the table are the eight checks on the proof page, listed in [Verify it yourself]({{LIVE_APP_URL}}/docs/verify).
+All reads go to Arc mainnet through `https://rpc.mainnet.arc.io`, with a second public node used for the proof page's large log queries. Countdowns use the latest block's timestamp, not the browser clock. The check names C1 to C8 in the table are the eight checks on the proof page, listed in [Verify it yourself](https://ooyaa.vercel.app/docs/verify).
 
 ### Reads
 

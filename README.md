@@ -6,9 +6,9 @@ Ooyaa is Tamil for never resting, unceasing: the name for a payday with no serve
 
 Payday runs without the employer being online. Anyone can press Run payday and earn a small USDC tip, each payee is paid exactly once per period in order, and a proof page re-checks every cent live from the chain.
 
-It already works that way. Within a day of going live, a wallet we do not control ran the demo payroll 37 times to collect the tip, paying 111 payslips while nobody on our side pressed anything. The [proof page]({{LIVE_APP_URL}}/proof) lists every runner, ours and outside.
+It already works that way. Within a day of going live, a wallet we do not control ran the demo payroll 37 times to collect the tip, paying 111 payslips while nobody on our side pressed anything. The [proof page](https://ooyaa.vercel.app/proof) lists every runner, ours and outside.
 
-[Live app]({{LIVE_APP_URL}}) | [Docs]({{LIVE_APP_URL}}/docs) | [Proof]({{LIVE_APP_URL}}/proof) | [Arc Studio project](https://studio.arc.io/app/dd654bc5-3b39-44da-bd26-b241e830343f)
+[Live app](https://ooyaa.vercel.app) | [Docs](https://ooyaa.vercel.app/docs) | [Proof](https://ooyaa.vercel.app/proof) | [Arc Studio project](https://studio.arc.io/app/dd654bc5-3b39-44da-bd26-b241e830343f)
 
 ## Live Deployments
 
@@ -166,12 +166,12 @@ flowchart LR
 
 ## The two-minute judge path
 
-1. Open the [live app]({{LIVE_APP_URL}}). The demo payroll is on the first screen, with a countdown, its payees and how many paydays it is funded for. No wallet is needed to look.
+1. Open the [live app](https://ooyaa.vercel.app). The demo payroll is on the first screen, with a countdown, its payees and how many paydays it is funded for. No wallet is needed to look.
 2. Press Connect and pick a browser wallet on Arc mainnet with a few cents of USDC for gas. Press Run payday and sign once. Three payslips are stamped PAID and the 0.01 USDC tip arrives in your wallet.
 3. Press the button again. If no other payday is waiting, the contract refuses before your wallet is asked to sign: "this payday is already paid".
-4. Open the [proof page]({{LIVE_APP_URL}}/proof). Eight checks run against Arc and the sheet is stamped VERIFIED. Your wallet appears in the list of runners, marked OUTSIDE.
+4. Open the [proof page](https://ooyaa.vercel.app/proof). Eight checks run against Arc and the sheet is stamped VERIFIED. Your wallet appears in the list of runners, marked OUTSIDE.
 5. Click any transaction in the ledger to open it on explorer.arc.io.
-6. Optional: read [Create a payroll]({{LIVE_APP_URL}}/docs/create-payroll) and make one of your own with a 2-minute period.
+6. Optional: read [Create a payroll](https://ooyaa.vercel.app/docs/create-payroll) and make one of your own with a 2-minute period.
 
 Then check it from a terminal. You need [Bun](https://bun.sh) and [Foundry](https://getfoundry.sh).
 
@@ -189,7 +189,7 @@ The last line of the output is:
 RESULT: 8 passed, 0 failed, 0 skipped
 ```
 
-Without `--payroll`, the command checks every payroll the factory has made. Checks C1 to C3 run once and C4 to C8 run once per payroll, so more payrolls mean more lines. A skipped check counts as skipped, not passed: C1 is skipped if you have not run `forge build`. The options and exit codes are in [Prove-it CLI]({{LIVE_APP_URL}}/docs/prove-it).
+Without `--payroll`, the command checks every payroll the factory has made. Checks C1 to C3 run once and C4 to C8 run once per payroll, so more payrolls mean more lines. A skipped check counts as skipped, not passed: C1 is skipped if you have not run `forge build`. The options and exit codes are in [Prove-it CLI](https://ooyaa.vercel.app/docs/prove-it).
 
 ## Quick Start
 
@@ -216,7 +216,7 @@ We ran them with Arc's Foundry build against both Arc testnet and Arc mainnet st
 
 ## Contract functions
 
-Full signatures, reverts, events and errors are in [Contracts]({{LIVE_APP_URL}}/docs/contracts).
+Full signatures, reverts, events and errors are in [Contracts](https://ooyaa.vercel.app/docs/contracts).
 
 | Contract | Function | Who | What it does |
 |---|---|---|---|
@@ -296,7 +296,7 @@ ARCHITECTURE.md
 
 Ooyaa has not been audited. Use small amounts. The contracts have no admin, no pause and no upgrade path, and they move USDC only to fixed destinations. Salaries and payee addresses are public on chain.
 
-The threat model, with every rule and review round, is in [docs/security/threat-model.md](docs/security/threat-model.md). A plain-English summary and the list of what was and was not tested are in [Limits]({{LIVE_APP_URL}}/docs/limits).
+The threat model, with every rule and review round, is in [docs/security/threat-model.md](docs/security/threat-model.md). A plain-English summary and the list of what was and was not tested are in [Limits](https://ooyaa.vercel.app/docs/limits).
 
 ## Licence
 
