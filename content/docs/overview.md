@@ -5,7 +5,7 @@ group: start
 
 Payday runs without the employer being online. Anyone can press Run payday and earn a small USDC tip, each payee is paid exactly once per period in order, and a proof page re-checks every cent live from the chain.
 
-It already works that way. Within a day of going live, a wallet we do not control ran the demo payroll 37 times to collect the tip, paying 111 payslips while nobody on our side pressed anything. The [proof page](/proof) lists every runner, ours and outside.
+It already works that way. Within two days of going live, a wallet we do not control started running the demo payroll for the tip, and it has run almost every payday since, usually within a minute of it falling due. The [proof page](/proof) counts every run by wallet, ours and outside.
 
 Ooyaa is a payroll for USDC on Arc. An employer lists the people to pay and how much each gets, picks a pay period, and puts USDC in. From then on the contract does the rest. There is no company server that has to stay up, no scheduler to keep alive and no admin who can change the rules.
 

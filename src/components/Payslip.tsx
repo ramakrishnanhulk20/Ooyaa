@@ -22,6 +22,8 @@ export type PayslipProps = {
   index: number;
   /** Whether entrance animation has been triggered */
   animate: boolean;
+  /** Optional: called when the user clicks the payslip card. */
+  onClick?: () => void;
 };
 
 export type PayslipHandle = {
@@ -32,7 +34,7 @@ export type PayslipHandle = {
 const EASING = [0.16, 1, 0.3, 1] as const;
 
 export const Payslip = forwardRef<PayslipHandle, PayslipProps>(
-  function Payslip({ period, payee, amount, status, rotation, index, animate }, ref) {
+  function Payslip({ period, payee, amount, status, rotation, index, animate, onClick }, ref) {
     const stampRef = useRef<StampHandle>(null);
 
     const slip = useImperativeHandle(ref, () => ({
@@ -78,6 +80,10 @@ export const Payslip = forwardRef<PayslipHandle, PayslipProps>(
         }}
       >
         <div
+          role={onClick ? 'button' : undefined}
+          tabIndex={onClick ? 0 : undefined}
+          onClick={onClick}
+          onKeyDown={onClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); } } : undefined}
           style={{
             background: 'var(--slip)',
             border: '1px solid var(--rule)',
@@ -86,7 +92,17 @@ export const Payslip = forwardRef<PayslipHandle, PayslipProps>(
             padding: '20px 24px 20px 32px',
             position: 'relative',
             overflow: 'hidden',
+            cursor: onClick ? 'pointer' : undefined,
+            transition: 'box-shadow 160ms ease, transform 160ms ease',
           }}
+          onMouseEnter={onClick ? (e) => {
+            (e.currentTarget).style.boxShadow = '0 24px 48px -20px rgba(18,25,63,.38)';
+            (e.currentTarget).style.transform = 'translateY(-2px)';
+          } : undefined}
+          onMouseLeave={onClick ? (e) => {
+            (e.currentTarget).style.boxShadow = '0 18px 40px -24px rgba(18,25,63,.25)';
+            (e.currentTarget).style.transform = '';
+          } : undefined}
         >
           {/* Left perforation strip */}
           <div

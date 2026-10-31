@@ -137,7 +137,15 @@ function creationTime(ts: bigint): string {
   return `${h}:${m} UTC, ${d.getUTCDate()} ${months[d.getUTCMonth()]}`;
 }
 
-function PayrollHeader({ payroll, creationBlock }: { payroll: Address; creationBlock: bigint | null }) {
+function PayrollHeader({
+  payroll,
+  creationBlock,
+  onSlipClick,
+}: {
+  payroll: Address;
+  creationBlock: bigint | null;
+  onSlipClick: (periodIndex: bigint, txHash: `0x${string}`) => void;
+}) {
   const { state, isLoading } = usePayrollState(payroll);
   const cardRef = useRef<PayrollCardHandle>(null);
 
@@ -266,6 +274,7 @@ function PayrollHeader({ payroll, creationBlock }: { payroll: Address; creationB
           payroll={payroll}
           fromBlock={creationBlock ?? ARC_MAINNET.factoryBlock}
           label="PAYROLL"
+          onSlipClick={onSlipClick}
         />
       </div>
     </div>
@@ -376,6 +385,24 @@ function PayrollPageInner({ payroll }: { payroll: Address }) {
     setDrawerOpen(true);
   }, []);
 
+  // Opens the drawer when a paid slip in the card stack is clicked.
+  const handleCardSlipClick = useCallback((periodIndex: bigint, txHash: `0x${string}`) => {
+    const row = allRows.find(
+      r => r.kind === 'payslip' &&
+        r.txHash.toLowerCase() === txHash.toLowerCase() &&
+        r.period === periodIndex,
+    ) as DrawerRow | undefined;
+    if (row) {
+      openDrawer(row, null);
+    } else {
+      // History may not be loaded yet; open by tx hash with logIndex 0 as fallback.
+      const fallback = allRows.find(
+        r => r.kind === 'payslip' && r.txHash.toLowerCase() === txHash.toLowerCase(),
+      ) as DrawerRow | undefined;
+      if (fallback) openDrawer(fallback, null);
+    }
+  }, [allRows, openDrawer]);
+
   const closeDrawer = useCallback(() => {
     setDrawerOpen(false);
     drawerTriggerRef.current?.focus();
@@ -483,7 +510,7 @@ function PayrollPageInner({ payroll }: { payroll: Address }) {
       {(isPayrollLoading || isCreationLoading) ? (
         <PayrollSkeleton />
       ) : (
-        <PayrollHeader payroll={payroll} creationBlock={creationBlock ?? null} />
+        <PayrollHeader payroll={payroll} creationBlock={creationBlock ?? null} onSlipClick={handleCardSlipClick} />
       )}
 
       {/* B.2: Employer panel -- EmployerPanel renders null unless the connected

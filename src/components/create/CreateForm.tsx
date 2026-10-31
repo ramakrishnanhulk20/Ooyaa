@@ -4,13 +4,14 @@
  * and submits via useCreatePayroll. No validation fires until the first submit
  * attempt, then all errors appear immediately on every keystroke.
  */
-import { useState, useCallback, useEffect } from 'react';
-import { useAccount } from 'wagmi';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { useAccount, usePublicClient } from 'wagmi';
 import { Link } from 'react-router-dom';
 import type { DraftPayroll, DraftError } from '../../payroll/draft.js';
 import {
   validateDraft,
   fundAmount,
+  draftToArgs,
   PERIOD_OPTIONS,
   loadDraft,
   saveDraft,
@@ -18,6 +19,11 @@ import {
 import { formatUsdc } from '../../payroll/format.js';
 import { useCreatePayroll } from '../../payroll/useCreatePayroll.js';
 import { StepList } from './StepList.js';
+import { ARC_MAINNET } from '../../deployments.js';
+import { factoryAbi } from '../../proof/abi.js';
+
+const DEAD = '0x000000000000000000000000000000000000dEaD' as const;
+const ARC_CHAIN_ID = ARC_MAINNET.chainId;
 
 // Input styles used throughout the form.
 const inputStyle: React.CSSProperties = {
@@ -65,10 +71,38 @@ export function CreateForm({ onDraftChange, onDone }: Props) {
   const [draft, setDraftState] = useState<DraftPayroll>(loadDraft);
   const [submitted, setSubmitted] = useState(false);
   const { address: walletAddress } = useAccount();
+  const publicClient = usePublicClient({ chainId: ARC_CHAIN_ID });
+
+  // Live gas estimate for createPayroll with the current draft args.
+  const [gasEstimate, setGasEstimate] = useState<string | null>(null);
+  const gasTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Chain timestamp polled on mount and every 30 s so start-time validation
+  // uses the actual block clock rather than the browser clock.
+  const [chainNow, setChainNow] = useState<bigint>(0n);
+  const chainNowRef = useRef<bigint>(0n);
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchNow() {
+      if (!publicClient) return;
+      try {
+        const block = await publicClient.getBlock({ blockTag: 'latest' });
+        if (!cancelled) {
+          chainNowRef.current = block.timestamp;
+          setChainNow(block.timestamp);
+        }
+      } catch {
+        // Network unavailable; keep the current value.
+      }
+    }
+    void fetchNow();
+    const id = setInterval(() => { void fetchNow(); }, 30_000);
+    return () => { cancelled = true; clearInterval(id); };
+  }, [publicClient]);
 
   // Derive errors during render when the user has already tried submitting.
   // Avoids calling setState inside a useEffect.
-  const fieldErrors: DraftError[] = submitted ? validateDraft(draft, 0n) : [];
+  const fieldErrors: DraftError[] = submitted ? validateDraft(draft, chainNow) : [];
 
   const { state, submit, retry } = useCreatePayroll();
 
@@ -84,6 +118,50 @@ export function CreateForm({ onDraftChange, onDone }: Props) {
 
   // Notify parent on first render.
   useEffect(() => { onDraftChange(draft); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Draft is valid only when chainNow is known and all fields pass.
+  // chainNow > 0n ensures the start-time bounds are actually checked.
+  const draftIsValid = chainNow > 0n && validateDraft(draft, chainNow).length === 0;
+
+  // Re-estimate gas 600 ms after the draft changes (debounced).
+  // Only runs when the draft is valid and chainNow is known.
+  useEffect(() => {
+    if (!draftIsValid || !publicClient) return;
+    if (gasTimerRef.current) clearTimeout(gasTimerRef.current);
+    gasTimerRef.current = setTimeout(() => {
+      void (async () => {
+        try {
+          // Use the most recent polled chain timestamp so draftToArgs computes
+          // a valid startTime without a round trip.
+          const now = chainNowRef.current > 0n
+            ? chainNowRef.current
+            : BigInt(Math.floor(Date.now() / 1000));
+          const args = draftToArgs(draft, now);
+          const account = walletAddress ?? DEAD;
+          const gasUnits = await publicClient.estimateContractGas({
+            address: ARC_MAINNET.factory,
+            abi: factoryAbi,
+            functionName: 'createPayroll',
+            args: [args.payees, args.amounts, args.startTime, args.periodLength, args.tipPerRun],
+            account,
+          });
+          // Gas price from the client; 0n if unavailable.
+          const gasPrice = await publicClient.getGasPrice().catch(() => 0n);
+          // Gas is priced in native USDC (18-decimal Arc token): cost = gas * gasPrice / 1e18.
+          // Convert to 6-decimal USDC display: divide the 18-decimal amount by 1e12.
+          const costWei = gasUnits * gasPrice;
+          const costUsdc6 = costWei / 1_000_000_000_000n;
+          const whole = costUsdc6 / 1_000_000n;
+          const frac = (costUsdc6 % 1_000_000n).toString().padStart(6, '0').replace(/0+$/, '');
+          const formatted = frac ? `${whole.toString()}.${frac}` : whole.toString();
+          setGasEstimate(`Gas to create this payroll: about ${formatted} USDC (live estimate). Allowing and funding cost a few thousandths more.`);
+        } catch {
+          setGasEstimate(null);
+        }
+      })();
+    }, 600);
+    return () => { if (gasTimerRef.current) clearTimeout(gasTimerRef.current); };
+  }, [draftIsValid, draft, walletAddress, publicClient]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Navigate when done.
   useEffect(() => {
@@ -381,9 +459,12 @@ export function CreateForm({ onDraftChange, onDone }: Props) {
       <section style={{ marginBottom: '24px', background: 'var(--slip)', border: '1px solid var(--rule)', borderRadius: '8px', padding: '16px 20px' }}>
         <p style={{ fontFamily: '"IBM Plex Sans", system-ui, sans-serif', fontSize: '0.9375rem', color: 'var(--ink-2)', margin: '0 0 8px', lineHeight: 1.5 }}>
           {draft.fundLater
-            ? <>You will sign once: create the payroll. Keep about 0.01 USDC extra on Arc for gas.</>
-            : <>You will sign up to 3 times: create the payroll, allow {totalFund !== null ? formatUsdc(totalFund) : '...'} USDC, fund it. Keep about 0.02 USDC extra on Arc for gas.</>
+            ? <>You will sign once: create the payroll.</>
+            : <>You will sign up to 3 times: create the payroll, allow {totalFund !== null ? formatUsdc(totalFund) : '...'}, fund it.</>
           }
+        </p>
+        <p style={{ fontFamily: '"IBM Plex Mono", monospace', fontSize: '0.8125rem', color: 'var(--ink-3)', margin: '0 0 8px', lineHeight: 1.5 }}>
+          {draftIsValid && gasEstimate ? gasEstimate : 'The gas estimate appears when the form is valid.'}
         </p>
         <p style={{ fontFamily: '"IBM Plex Sans", system-ui, sans-serif', fontSize: '0.875rem', color: 'var(--ink-2)', margin: 0, lineHeight: 1.5 }}>
           Payee addresses and amounts are public on Arc. Anyone can see who you pay and how much.

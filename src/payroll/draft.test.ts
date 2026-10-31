@@ -139,3 +139,40 @@ describe('parseUsdcInput', () => {
   test('7 decimals returns null', () => expect(parseUsdcInput('0.0000001')).toBeNull());
   test('non-numeric returns null', () => expect(parseUsdcInput('abc')).toBeNull());
 });
+
+// Gas estimate gate: the form enables estimateContractGas only when
+// validateDraft(draft, chainNow) returns zero errors with a real chain time.
+// chainNow = 0n skips start-time validation, so draftIsValid must use a real
+// chain timestamp to catch past or too-far-future firstPayday: 'pick' entries.
+describe('gas estimate gate', () => {
+  // EIP-55 checksummed form of the address from the spec.
+  const PAYEE = '0x96e81da285BB91b7d02EE3E6aD51fA3Caf5dAB75';
+
+  test('valid draft with known chain time returns no errors (gate opens)', () => {
+    const d = draft({
+      payees: [{ address: PAYEE, amountUsdc: '0.01' }],
+      firstPayday: 'in_2m',
+    });
+    expect(validateDraft(d, NOW)).toHaveLength(0);
+  });
+
+  test('past pick date with chainNow 0n passes (start-time check skipped)', () => {
+    // This is why the gate must use a real chain timestamp, not 0n.
+    const d = draft({
+      payees: [{ address: PAYEE, amountUsdc: '0.01' }],
+      firstPayday: 'pick',
+      pickDatetime: '2000-01-01T00:00',
+    });
+    expect(validateDraft(d, 0n)).toHaveLength(0);
+  });
+
+  test('past pick date with real chain time returns startTime error (gate stays closed)', () => {
+    const d = draft({
+      payees: [{ address: PAYEE, amountUsdc: '0.01' }],
+      firstPayday: 'pick',
+      pickDatetime: '2000-01-01T00:00',
+    });
+    const errs = validateDraft(d, NOW);
+    expect(errs.some(e => e.field === 'startTime')).toBe(true);
+  });
+});

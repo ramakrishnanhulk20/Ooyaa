@@ -25,7 +25,7 @@ import { deriveCardState } from '../payroll/cardState.js';
 import { useRunPayday } from '../payroll/useRunPayday.js';
 import { Payslip } from './Payslip.js';
 import type { PayslipHandle } from './Payslip.js';
-import { formatUsdc, cadence, countdown } from '../payroll/format.js';
+import { formatUsdc, cadence, countdown, periodDisplayLabel } from '../payroll/format.js';
 import type { StampKind } from './Stamp.js';
 
 const EXPLORER = ARC_MAINNET.explorer;
@@ -44,6 +44,12 @@ export type PayrollCardProps = {
   label: string;
   /** id forwarded to the run button element, used for scroll-and-focus. */
   id?: string;
+  /**
+   * Called when the user clicks a paid payslip in the stack.
+   * Receives the paid period index (0-based contract index) and the tx hash.
+   * On /p/:address the page opens the SlipDrawer; on the home page it navigates.
+   */
+  onSlipClick?: (periodIndex: bigint, txHash: `0x${string}`) => void;
 };
 
 const ROTATIONS = ['-1.5deg', '0deg', '+1.2deg'];
@@ -64,7 +70,7 @@ function Skeleton({ width, height = 16 }: { width: string | number; height?: num
 }
 
 export const PayrollCard = forwardRef<PayrollCardHandle, PayrollCardProps>(
-  function PayrollCard({ payroll, fromBlock, label, id }, ref) {
+  function PayrollCard({ payroll, fromBlock, label, id, onSlipClick }, ref) {
     const nowChain = useChainClock();
     const { state, payees, amounts, dueNow, nextPayday, isLoading, isError } = usePayrollState(payroll);
     const [slipsAnimate, setSlipsAnimate] = useState(false);
@@ -114,8 +120,7 @@ export const PayrollCard = forwardRef<PayrollCardHandle, PayrollCardProps>(
       });
 
       const { period, paid, count, tip, hash } = runState;
-      const periodStr = `Period ${String(Number(period) + 1).padStart(4, '0')}`;
-      const msg = `${periodStr} paid: ${formatUsdc(paid)} to ${count} people, and your ${formatUsdc(tip)} tip.`;
+      const msg = `${periodDisplayLabel(period)} paid: ${formatUsdc(paid)} to ${count} people, and your ${formatUsdc(tip)} tip.`;
       toast.success(msg, {
         description: (
           <a
@@ -241,10 +246,11 @@ export const PayrollCard = forwardRef<PayrollCardHandle, PayrollCardProps>(
 
     const extraPayees = (payees?.length ?? 0) > 3 ? (payees?.length ?? 0) - 3 : 0;
 
+    // The paid period index from a just-run transaction.
+    const justPaidPeriod = runState.kind === 'paid' ? runState.period : undefined;
+
     function slipStatusFor(index: number) {
       if (runState.kind === 'paid') {
-        const paidPayslips = runState.period !== undefined ? [] : [];
-        void paidPayslips;
         return { kind: 'paid' as const, txHash: runState.hash, explorer: EXPLORER };
       }
       if (cardState.kind === 'idle' && cardState.lastPaidPeriod !== null && paidRun) {
@@ -258,6 +264,16 @@ export const PayrollCard = forwardRef<PayrollCardHandle, PayrollCardProps>(
       }
       void index;
       return { kind: 'due' as const, dueAt: state?.startTime ?? 0n, nowChain };
+    }
+
+    // Period index to pass to Payslip: the paid period when known (so
+    // periodLabel adds one and shows the right number), otherwise nextUnpaid.
+    function slipPeriodFor(): bigint {
+      if (justPaidPeriod !== undefined) return justPaidPeriod;
+      if (paidPeriod !== null) return BigInt(paidPeriod);
+      // Default: nextUnpaid - 1 if loaded, else nextUnpaid (shows "due" state).
+      if (state && state.nextUnpaid > 0n) return state.nextUnpaid - 1n;
+      return state?.nextUnpaid ?? 0n;
     }
 
     function runButton() {
@@ -386,10 +402,9 @@ export const PayrollCard = forwardRef<PayrollCardHandle, PayrollCardProps>(
       }
       if (runState.kind === 'paid') {
         const { period, paid, count, tip } = runState;
-        const periodStr = `Period ${String(Number(period) + 1).padStart(4, '0')}`;
         return (
           <span style={{ color: 'var(--paid)' }}>
-            {periodStr} paid: {formatUsdc(paid)} to {count} people, and your {formatUsdc(tip)} tip.
+            {periodDisplayLabel(period)} paid: {formatUsdc(paid)} to {count} people, and your {formatUsdc(tip)} tip.
           </span>
         );
       }
@@ -449,10 +464,11 @@ export const PayrollCard = forwardRef<PayrollCardHandle, PayrollCardProps>(
         return 'The employer must top it up before the next run.';
       }
       if (cardState.kind === 'idle') {
-        const paidP = cardState.lastPaidPeriod !== null ? Number(cardState.lastPaidPeriod) + 1 : null;
-        const periodLabel = paidP !== null ? `Period ${String(paidP).padStart(4, '0')} is paid.` : '';
+        const pLabel = cardState.lastPaidPeriod !== null
+          ? `${periodDisplayLabel(BigInt(cardState.lastPaidPeriod))} is paid.`
+          : '';
         const timeStr = secsToNext > 0 ? ` Next payday in ${countdown(secsToNext)}.` : '';
-        return `${periodLabel}${timeStr}`;
+        return `${pLabel}${timeStr}`;
       }
       if (cardState.kind === 'due') {
         const tip = formatUsdc(state.tipPerRun);
@@ -543,19 +559,30 @@ export const PayrollCard = forwardRef<PayrollCardHandle, PayrollCardProps>(
           }}
           className="slip-stack"
         >
-          {slipsToRender.map(({ payee, amount, index }) => (
-            <Payslip
-              key={payee ?? `skeleton-${index}`}
-              ref={el => { slipRefs.current[index] = el; }}
-              period={state?.nextUnpaid ?? 0n}
-              payee={payee}
-              amount={amount}
-              status={slipStatusFor(index)}
-              rotation={ROTATIONS[index] ?? '0deg'}
-              index={index}
-              animate={slipsAnimate}
-            />
-          ))}
+          {slipsToRender.map(({ payee, amount, index }) => {
+            const slipStatus = slipStatusFor(index);
+            const isPaid = slipStatus.kind === 'paid';
+            const handleSlipClick = isPaid && onSlipClick
+              ? () => {
+                const period = slipPeriodFor();
+                onSlipClick(period, slipStatus.txHash);
+              }
+              : undefined;
+            return (
+              <Payslip
+                key={payee ?? `skeleton-${index}`}
+                ref={el => { slipRefs.current[index] = el; }}
+                period={slipPeriodFor()}
+                payee={payee}
+                amount={amount}
+                status={slipStatus}
+                rotation={ROTATIONS[index] ?? '0deg'}
+                index={index}
+                animate={slipsAnimate}
+                onClick={handleSlipClick}
+              />
+            );
+          })}
           {extraPayees > 0 && (
             <div style={{
               position: 'absolute',

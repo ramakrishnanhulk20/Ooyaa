@@ -31,7 +31,7 @@ Your wallet may show the balance with 18 decimals or with 6. Both are the same U
 
 ## Step 3: put a little USDC on Arc
 
-A payday costs about 0.004 USDC in gas for a 3-payee run, so 0.05 USDC covers a dozen tries. Check the [Arc documentation](https://docs.arc.io) for the current ways to bring USDC onto Arc. Send it to your wallet's address, which is the same on every EVM network.
+A payday costs about 0.004 USDC in gas for a 3-payee run, so 0.05 USDC covers a dozen tries. Two ways to get it: [Arc Portal](https://www.arc.io/blog/arc-portal-the-easiest-place-to-get-started-on-arc) lets you create or connect a wallet and fund it through its built-in onramp or a swap, and Circle's CCTP moves USDC you already hold on another chain onto Arc. Send it to your wallet's address, which is the same on every EVM network.
 
 Check the balance in your wallet with Arc selected. If it shows 0, the app will say "Your wallet needs a little USDC on Arc for gas, about 0.004 USDC."
 

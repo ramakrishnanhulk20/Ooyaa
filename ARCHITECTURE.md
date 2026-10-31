@@ -11,7 +11,7 @@ The employer creates a payroll through the factory. The factory deploys one Payr
 The web app is a set of static pages. The home page and the payroll pages read the contract and offer a Run payday button. The proof page reads logs, balances and bytecode from Arc and re-checks them in your browser.
 
 ```mermaid
-flowchart LR
+flowchart TB
   employer["Employer wallet"]
   payees["Payees"]
   runner["Runner, any wallet"]
@@ -91,7 +91,7 @@ USDC enters a payroll through `fund(amount)`, which anyone can call after approv
 USDC leaves in four ways only. Payslips and tips leave during `run()`. A payee collects held pay with `claim()`. The employer takes out the free balance with `withdraw()`. Every one of these sends to a fixed destination: the payee, the runner, the claimant or the employer. No function lets a caller name a different recipient.
 
 ```mermaid
-flowchart LR
+flowchart TB
   fundIn["fund(amount) by anyone, after approve"] --> balance
   direct["Direct USDC transfer, no fund call"] --> balance
   balance["Payroll USDC balance"]

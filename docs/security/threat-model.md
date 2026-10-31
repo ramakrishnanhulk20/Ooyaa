@@ -398,9 +398,9 @@ forge test --no-match-contract PayrollFork
 forge test --no-match-contract PayrollFork --isolate
 ```
 
-This runs 89 tests: 69 unit and fuzz tests in `Payroll.t.sol`, 6 in `PaydayFactory.t.sol`, and 14 in `PayrollInvariant.t.sol` (13 invariants and one coverage test). Foundry 1.8.6 groups the invariant campaign and reports 77. The `--isolate` run makes every call start cold, as it does on chain, which matters for the gas tests. The invariant suite was also run at five fixed seeds, 0 to 4, in both modes. You can pass `--fuzz-seed <n>` to explore other sequences.
+This runs 89 tests: 69 unit and fuzz tests in `Payroll.t.sol`, 6 in `PaydayFactory.t.sol`, and 14 in `PayrollInvariant.t.sol` (13 invariants and one coverage test). That count is from Arc Studio's Foundry v1.7.1; Foundry 1.8.6 groups the invariant campaign and reports 77. The `--isolate` run makes every call start cold, as it does on chain, which matters for the gas tests. The invariant suite was also run at five fixed seeds, 0 to 4, in both modes. You can pass `--fuzz-seed <n>` to explore other sequences.
 
-Run the fork tests against Arc's real USDC state, with Arc's Foundry build and a node URL for the network you want. Standard Foundry cannot simulate USDC as Arc's native token, so these 6 tests fail there by design. Install Arc's Foundry build from [github.com/circlefin/arc-foundry](https://github.com/circlefin/arc-foundry), as its README describes; it installs as `arc-forge`.
+Run the fork tests against Arc's real USDC state, with Arc's Foundry build and a node URL for the network you want. Standard Foundry cannot simulate USDC as Arc's native token, so these 6 tests fail there by design. Install Arc's Foundry build from [github.com/circlefin/arc-foundry](https://github.com/circlefin/arc-foundry), as its README describes; it installs as `arc-forge`. Arc's Foundry README says there is no prebuilt Windows binary: on Windows, build it from source or run it under WSL.
 
 ```bash
 arc-forge test --match-path contracts/test/PayrollFork.t.sol --fork-url https://rpc.testnet.arc.io

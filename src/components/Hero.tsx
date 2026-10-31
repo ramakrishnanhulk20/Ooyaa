@@ -1,9 +1,12 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { DemoPayrollCard } from './DemoPayrollCard.js';
 import type { DemoPayrollCardHandle } from './DemoPayrollCard.js';
 import { ARC_MAINNET } from '../deployments.js';
+import { useHistory } from '../proof/useHistory.js';
+import { usePayrollState } from '../payroll/usePayrollState.js';
+import { formatUsdc } from '../payroll/format.js';
 
 const FACTORY = ARC_MAINNET.factory;
 const EXPLORER = ARC_MAINNET.explorer;
@@ -23,6 +26,38 @@ void shortAddr;
 export function Hero() {
   const cardRef = useRef<DemoPayrollCardHandle>(null);
   const [animate, setAnimate] = useState(false);
+
+  // Fetch demo payroll history to compute outside-run count.
+  const { history } = useHistory(ARC_MAINNET.demoPayroll, ARC_MAINNET.demoPayrollBlock);
+  const { state: demoState } = usePayrollState(ARC_MAINNET.demoPayroll);
+
+  // k = PaydayRun events whose runner is neither employer nor any payee ever named;
+  // n = all PaydayRun events.
+  const outsideRunLine = useMemo(() => {
+    if (!history || !demoState) return null;
+    const employer = demoState.employer?.toLowerCase() ?? '';
+    const payeeSet = new Set<string>();
+
+    // Collect all addresses that ever appeared as a payee in any PayslipIssued event.
+    for (const ev of history.events) {
+      if (ev.eventName === 'PayslipIssued') {
+        const p = (ev.args.payee as string | undefined) ?? '';
+        if (p) payeeSet.add(p.toLowerCase());
+      }
+    }
+
+    let n = 0;
+    let k = 0;
+    for (const ev of history.events) {
+      if (ev.eventName !== 'PaydayRun') continue;
+      n++;
+      const runner = ((ev.args.runner as string | undefined) ?? '').toLowerCase();
+      if (runner && runner !== employer && !payeeSet.has(runner)) k++;
+    }
+
+    if (n === 0) return null;
+    return { k, n, tip: demoState.tipPerRun };
+  }, [history, demoState]);
 
   const reducedMotion =
     typeof window !== 'undefined' &&
@@ -208,6 +243,29 @@ export function Hero() {
                 {FACTORY_SHORT}
               </a>
             </span>
+            {/* Reserve one line of height while loading so layout does not jump. */}
+            <div style={{ marginTop: '6px', minHeight: '1.25rem' }}>
+              {outsideRunLine && (
+                <Link
+                  to="/proof"
+                  style={{
+                    fontFamily: '"IBM Plex Mono", monospace',
+                    fontSize: '0.8125rem',
+                    color: 'var(--ink-2)',
+                    textDecoration: 'none',
+                    borderBottom: '1px solid transparent',
+                    transition: 'border-color 200ms ease',
+                    maxWidth: '100%',
+                    display: 'inline',
+                    overflowWrap: 'break-word',
+                  }}
+                  onMouseEnter={e => { (e.currentTarget).style.borderBottomColor = 'var(--ink-2)'; }}
+                  onMouseLeave={e => { (e.currentTarget).style.borderBottomColor = 'transparent'; }}
+                >
+                  {outsideRunLine.k} of the {outsideRunLine.n} paydays so far were run by wallets we do not control, for the {formatUsdc(outsideRunLine.tip)} tip.
+                </Link>
+              )}
+            </div>
             <div style={{ marginTop: '10px' }}>
               <Link
                 to="/new"

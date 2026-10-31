@@ -6,7 +6,7 @@ Ooyaa is Tamil for never resting, unceasing: the name for a payday with no serve
 
 Payday runs without the employer being online. Anyone can press Run payday and earn a small USDC tip, each payee is paid exactly once per period in order, and a proof page re-checks every cent live from the chain.
 
-It already works that way. Within a day of going live, a wallet we do not control ran the demo payroll 37 times to collect the tip, paying 111 payslips while nobody on our side pressed anything. The [proof page](https://ooyaa.vercel.app/proof) lists every runner, ours and outside.
+It already works that way. Within two days of going live, a wallet we do not control started running the demo payroll for the tip, and it has run almost every payday since, usually within a minute of it falling due. The [proof page](https://ooyaa.vercel.app/proof) counts every run by wallet, ours and outside.
 
 [Live app](https://ooyaa.vercel.app) | [Docs](https://ooyaa.vercel.app/docs) | [Proof](https://ooyaa.vercel.app/proof) | [Arc Studio project](https://studio.arc.io/app/dd654bc5-3b39-44da-bd26-b241e830343f)
 
@@ -86,7 +86,7 @@ The full write-up, with the list of contract calls the app makes, is in [ARCHITE
 How the pieces connect:
 
 ```mermaid
-flowchart LR
+flowchart TB
   employer["Employer wallet"]
   payees["Payees"]
   runner["Runner, any wallet"]
@@ -152,7 +152,7 @@ sequenceDiagram
 Where the money goes:
 
 ```mermaid
-flowchart LR
+flowchart TB
   fundIn["fund(amount) by anyone, after approve"] --> balance
   direct["Direct USDC transfer, no fund call"] --> balance
   balance["Payroll USDC balance"]
@@ -167,7 +167,7 @@ flowchart LR
 ## The two-minute judge path
 
 1. Open the [live app](https://ooyaa.vercel.app). The demo payroll is on the first screen, with a countdown, its payees and how many paydays it is funded for. No wallet is needed to look.
-2. Press Connect and pick a browser wallet on Arc mainnet with a few cents of USDC for gas. Press Run payday and sign once. Three payslips are stamped PAID and the 0.01 USDC tip arrives in your wallet.
+2. Press Run payday. Most of the time an outside wallet has already paid the payday within a minute of it falling due, so the contract refuses a second run before any wallet is asked to sign: that refusal is the exactly-once promise, and the stranger is the "runs without us" promise. To press the button and get paid the tip yourself, create your own payroll with a 2-minute period (step 6) and run it from its page.
 3. Press the button again. If no other payday is waiting, the contract refuses before your wallet is asked to sign: "this payday is already paid".
 4. Open the [proof page](https://ooyaa.vercel.app/proof). Eight checks run against Arc and the sheet is stamped VERIFIED. Your wallet appears in the list of runners, marked OUTSIDE.
 5. Click any transaction in the ledger to open it on explorer.arc.io.
@@ -200,13 +200,14 @@ git clone https://github.com/ramakrishnanhulk20/ooyaa ooyaa
 cd ooyaa
 bun install
 bun run dev                                  # the app, at http://localhost:5173
-bun run prove                                # re-check Arc mainnet from the chain
+forge build                                  # needed by check C1
+bun run prove                                # re-check Arc mainnet, about 2 minutes
 forge test --no-match-contract PayrollFork   # unit, fuzz and invariant tests
 ```
 
-The app reads Arc mainnet from public RPC nodes, so it works from a local server with no keys. Run `forge build` before `bun run prove` so check C1 can compare mainnet with your own build.
+The app reads Arc mainnet from public RPC nodes, so it works from a local server with no keys. `bun run prove` reads every log from Arc's public node in 10,000-block windows, so it takes about 2 minutes and may print a "rate limiting, waiting" line. That is normal.
 
-The fork tests run against real USDC state, with Arc's Foundry build and a fork URL. Standard Foundry cannot simulate USDC as Arc's native token, so these 6 tests fail there by design. Install Arc's Foundry build from [github.com/circlefin/arc-foundry](https://github.com/circlefin/arc-foundry), as its README describes; it installs as `arc-forge`.
+The fork tests run against real USDC state, with Arc's Foundry build and a fork URL. Standard Foundry cannot simulate USDC as Arc's native token, so these 6 tests fail there by design. Install Arc's Foundry build from [github.com/circlefin/arc-foundry](https://github.com/circlefin/arc-foundry), as its README describes; it installs as `arc-forge`. Arc's Foundry README says there is no prebuilt Windows binary: on Windows, build it from source or run it under WSL.
 
 ```bash
 arc-forge test --match-path contracts/test/PayrollFork.t.sol --fork-url https://rpc.testnet.arc.io
@@ -239,7 +240,7 @@ Results from the last full runs, on 31 October 2026:
 
 | Suite | Command | Result |
 |---|---|---|
-| Unit, fuzz and invariant tests | `forge test --no-match-contract PayrollFork` | 89 passed, 0 failed in Arc Studio. Foundry 1.8.6 groups the invariant campaign and reports the same suite as 77 passed, 0 failed. |
+| Unit, fuzz and invariant tests | `forge test --no-match-contract PayrollFork` | 89 passed, 0 failed in Arc Studio. That is Arc Studio's Foundry (v1.7.1, pinned in `.foundry-version`). Foundry 1.8.6 groups the invariant campaign and reports the same suite as 77 passed, 0 failed. |
 | Real-USDC fork tests | `arc-forge test --match-path contracts/test/PayrollFork.t.sol --fork-url https://rpc.testnet.arc.io` | 6 passed, 0 failed, on Arc testnet and on Arc mainnet state. They need Arc's Foundry build. |
 | App tests | `bun test src` | 228 passed, 0 failed |
 

@@ -29,7 +29,7 @@ Open the Create page from the top navigation, or use the link under the home pag
 4. Choose how many paydays to fund now.
 5. Create the payroll, allow the payroll to pull the USDC (the exact amount, never unlimited), and fund it. That is up to three signatures. Each step is simulated first, and a refusal is shown in plain words before anything is signed.
 
-When it is done you land on `/p/<your payroll address>`, which shows the live card with its countdown. Keep about 0.02 USDC extra in the wallet for gas.
+When it is done you land on `/p/<your payroll address>`, which shows the live card with its countdown. Keep a little extra USDC for gas. Creating a 3-payee payroll used 2,057,305 gas on mainnet, about 0.043 USDC at the price that day, and allowing and funding cost a few thousandths more. The form shows a live estimate before you sign.
 
 The first payday time is computed from the latest block's timestamp, not from your computer's clock. If you take too long to sign, the factory can refuse the payroll with `StartTimeTooEarly`. Pick a start a few minutes ahead and try again.
 

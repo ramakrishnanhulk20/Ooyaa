@@ -9,25 +9,33 @@ function shortAddr(addr: string): string {
 type RunnerInfo = {
   address: Address;
   outside: boolean;
+  runs: number;
 };
 
 function collectRunners(ledgers: StreamedLedger[]): RunnerInfo[] {
   const seen = new Map<string, RunnerInfo>();
+  // Count PaydayRun events per runner across all ledger histories.
   for (const l of ledgers) {
     const outsideSet = new Set(l.ledger.outsideRunners.map(a => a.toLowerCase()));
-    for (const r of l.ledger.runners) {
-      const low = r.toLowerCase();
-      if (!seen.has(low)) {
-        seen.set(low, { address: getAddress(r), outside: outsideSet.has(low) });
+    for (const ev of l.history.events) {
+      if (ev.eventName !== 'PaydayRun') continue;
+      const runner = (ev.args.runner as string | undefined) ?? '';
+      if (!runner) continue;
+      const low = runner.toLowerCase();
+      const existing = seen.get(low);
+      if (existing) {
+        existing.runs += 1;
+      } else {
+        seen.set(low, { address: getAddress(runner), outside: outsideSet.has(low), runs: 1 });
       }
     }
   }
-  // Outside runners first, then ours.
+  // Outside runners first (most runs within each group), then ours.
   const all = [...seen.values()];
   all.sort((a, b) => {
     if (a.outside && !b.outside) return -1;
     if (!a.outside && b.outside) return 1;
-    return 0;
+    return b.runs - a.runs;
   });
   return all;
 }
@@ -114,7 +122,7 @@ export function WalletList({ ledgers }: Props) {
                 letterSpacing: '0.06em',
                 color: r.outside ? 'var(--paid)' : 'var(--ink-3)',
               }}>
-                {r.outside ? 'OUTSIDE' : 'OURS'}
+                {r.outside ? 'OUTSIDE' : 'OURS'}, {r.runs} {r.runs === 1 ? 'run' : 'runs'}
               </span>
             </div>
           ))}

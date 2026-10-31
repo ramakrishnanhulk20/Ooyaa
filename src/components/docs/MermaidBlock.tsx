@@ -8,6 +8,9 @@ async function initMermaid() {
   mermaid.initialize({
     startOnLoad: false,
     theme: 'base',
+    // flowchart.useMaxWidth false lets the diagram grow to its natural width
+    // inside the scrollable container; sequence diagrams keep fitting the column.
+    flowchart: { useMaxWidth: false },
     themeVariables: {
       primaryColor: '#FFFFFF',
       primaryBorderColor: '#12193F',
@@ -77,9 +80,12 @@ export function MermaidBlock({ code }: Props) {
     );
   }
 
+  // Flowcharts need minWidth: max-content so the SVG can grow to its natural
+  // width and the outer overflowX: auto scrolls when narrower than the viewport.
+  const isFlowchart = /^\s*(flowchart|graph)\s/i.test(code);
+
   return (
     <div
-      ref={containerRef}
       style={{
         overflowX: 'auto',
         margin: '24px 0',
@@ -88,6 +94,11 @@ export function MermaidBlock({ code }: Props) {
         borderRadius: '8px',
         padding: '24px',
       }}
-    />
+    >
+      <div
+        ref={containerRef}
+        style={{ minWidth: isFlowchart ? 'max-content' : undefined, display: 'flex', justifyContent: 'center' }}
+      />
+    </div>
   );
 }

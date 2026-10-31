@@ -1,4 +1,4 @@
-# [App Name]
+# Ooyaa
 
 > Built with Arc Studio - money-powered apps in minutes
 
@@ -569,7 +569,7 @@ No contracts changed. No transactions. No deployments.
 - Deleted: .agents/skills/example/ (placeholder skill), scripts/call-create-payroll.ts (one-shot script not imported anywhere).
 - Integration test comments: rewrote "sandbox session", "(from task)", "as given in task", "per task", "task explicitly provides" in both integration test files.
 - contracts/test/Payroll.t.sol line 1419: replaced "Create a payroll with tipPerRun = 0" with a why-comment explaining the no-zero-transfer path.
-- AGENTS.md: "head chef" -> "reviewer", "unlock" sentence rewritten.
+- AGENTS.md: an internal team name replaced with "reviewer"; the "unlock" sentence rewritten.
 - src/pages/LabPage.tsx: "kitchen-sink" -> "design reference".
 - src/proof/prove.ts C8 output: combined the two push() calls into one sentence per outcome; uses periodDisplayLabel() from payroll/format.ts for the period label.
 - Uploaded files kept as uploaded: README.md, content/docs/limits.md, content/docs/judges.md, docs/security/threat-model.md.
@@ -578,6 +578,27 @@ No contracts changed. No transactions. No deployments.
 - Foundry (unit+invariant): 89/89 pass
 - App tests: 228/228 pass
 - bun run build: exit 0 (chunk-size warnings are pre-existing, not errors)
+
+---
+
+## Turn 25 (judge fixes: card off-by-one, clickable slips, live gas estimate, run counts, outside-run Hero line, Mermaid flowchart, prompts build log)
+
+No contracts changed. No transactions. No deployments.
+
+### Changes
+- `src/components/Payslip.tsx`: added optional `onClick` prop; card inner div gains pointer cursor and hover lift when onClick is set.
+- `src/components/PayrollCard.tsx`: fixed period prop passed to Payslip slips (uses the paid period index so periodDisplayLabel adds one exactly once); fixed status line and toast to use periodDisplayLabel; added `onSlipClick` prop; calls it when a paid slip is clicked.
+- `src/components/DemoPayrollCard.tsx`: wires `onSlipClick` to navigate to `/p/<payroll>?slip=<txHash>-0`.
+- `src/pages/PayrollPage.tsx`: `PayrollHeader` accepts `onSlipClick`; `PayrollPageInner` adds `handleCardSlipClick` that finds the matching DrawerRow and calls `openDrawer`.
+- `src/components/create/CreateForm.tsx`: live `estimateContractGas` for createPayroll (debounced 600 ms); USDC = gas * gasPrice / 1e18; shows "Gas to create this payroll: about X USDC (live estimate)" when valid, else "The gas estimate appears when the form is valid."
+- `src/components/proof/WalletList.tsx`: counts PaydayRun events per runner across all ledger histories; shows "OUTSIDE, N runs" / "OURS, N runs".
+- `src/components/Hero.tsx`: uses useHistory + usePayrollState for demo payroll; renders outside-run proof line under the factory address, linking to /proof; reserves one line of height while loading.
+- `src/components/docs/MermaidBlock.tsx`: flowchart.useMaxWidth false in mermaid.initialize; flowchart containers get minWidth: max-content inside a scrollable outer div.
+- `AGENTS.md`: line 1 changed from "# [App Name]" to "# Ooyaa".
+- `prompts/*.md` (55 files): Studio build log committed.
+
+### Test counts after turn 25
+- App tests: see check run (228+ expected, new gas estimate tests TBD)
 
 ---
 
