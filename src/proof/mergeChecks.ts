@@ -2,7 +2,7 @@
  * mergeChecks: collapses multiple per-payroll CheckResults into one row per
  * check id, in canonical C1..C8 order.
  *
- * prove() fires one C4..C8 result per payroll.  When two payrolls both have
+ * prove() fires one C4..C8 result per payroll. When two payrolls both have
  * C8, mergeChecks returns a single C8 row whose status is FAIL if any payroll
  * FAILs, PASS if at least one PASSes, or SKIP when all are SKIP.
  *
@@ -70,4 +70,16 @@ export function mergeChecks(results: CheckResult[]): CheckResult[] {
     });
   }
   return merged;
+}
+
+/**
+ * True when mergeChecks(checks) has all 8 ids and every merged row is PASS.
+ * A SKIP on any payroll propagates as SKIP in the merged row, so a real
+ * SKIP makes the proof unverifiable and isVerified returns false. This is
+ * intentional: "verified" means all eight checks passed with no caveats.
+ */
+export function isVerified(checks: CheckResult[]): boolean {
+  const merged = mergeChecks(checks);
+  if (merged.length !== CHECK_ORDER.length) return false;
+  return merged.every(c => c.status === "PASS");
 }

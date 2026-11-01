@@ -667,6 +667,7 @@ export const PayrollCard = forwardRef<PayrollCardHandle, PayrollCardProps>(
           <div style={{ marginTop: '16px' }}>
             <Link
               to={`/p/${payroll}`}
+              className="every-payslip-link"
               style={{
                 fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
                 fontWeight: 500,

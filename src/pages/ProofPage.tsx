@@ -6,6 +6,7 @@ import { WalletList } from '../components/proof/WalletList.js';
 import { LedgerTable } from '../components/proof/LedgerTable.js';
 import { StudioFacts } from '../components/proof/StudioFacts.js';
 import { useProofReport } from '../proof/useProofReport.js';
+import { isVerified } from '../proof/mergeChecks.js';
 
 function shortBlock(n: bigint): string {
   return n.toLocaleString('en-US');
@@ -80,8 +81,7 @@ export function ProofPage() {
   useEffect(() => {
     if (stampFiredRef.current) return;
     if (status !== 'success') return;
-    const allPassed = checks.length > 0 && checks.every(c => c.status === 'PASS');
-    if (!allPassed) return;
+    if (!isVerified(checks)) return;
     stampFiredRef.current = true;
     const t = setTimeout(() => {
       void sheetRef.current?.stampVerified();
@@ -230,7 +230,7 @@ export function ProofPage() {
         <TotalsBand
           ledgers={displayLedgers}
           factory={report?.factory ?? ''}
-          loading={isLoading}
+          loading={isLoading && displayLedgers === undefined}
           payrollCount={payrollCount}
         />
 

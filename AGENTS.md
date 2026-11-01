@@ -644,6 +644,28 @@ No contracts changed. No transactions. No deployments.
 
 ---
 
+## Turn 29d (UX audit part 4: VERIFIED across payrolls, full pending rows, streaming totals)
+
+No contracts changed. No transactions. No deployments.
+
+### Key changes
+- `src/proof/mergeChecks.ts`: `isVerified(checks)` exported. True when all 8 merged rows are PASS; a SKIP from any payroll stays SKIP in the merged row and blocks the stamp. The 1 Nov payroll SKIPs C8 (no paydays), so the real factory verdict is unverified until a second payroll PASSes C8.
+- `src/proof/mergeChecks.test.ts`: 6 new `isVerified` tests (all PASS, demo PASS + other SKIP, FAIL blocks, standalone SKIP blocks, missing id, empty).
+- `src/pages/ProofPage.tsx`: stamp effect uses `isVerified(checks)` instead of `checks.every(c => c.status === 'PASS')`.
+- `src/components/proof/ProofSheet.tsx`: `CheckRow` gains `rowId` prop. Pending rows now show their id and title at the same `padding: '14px 0'` height as completed rows, eliminating the 26px growth per row on arrival.
+- `src/pages/ProofPage.tsx`: `loading={isLoading && displayLedgers === undefined}` so TotalsBand switches from skeleton to live numbers as soon as the first payroll streams.
+- `src/components/proof/TotalsBand.tsx`: `useCountUp` stores the live on-screen value in `screenRef` and starts each new animation from wherever the counter is, not from the last finished target. `SkeletonBar` accepts a `height` prop; skeleton columns match BandItem's 12px label + 6px gap + 40px number = 58px so the skeleton-to-live swap shifts nothing.
+- `src/index.css`: tap-target additions for `.every-payslip-link`, `.copy-address-btn` 44x44, `.period-btn` height 44px, `.footer-link` min-width 44px.
+- `src/components/PayrollCard.tsx`: `every-payslip-link` class on the "Every payslip from this payroll" link.
+
+### Test counts after turn 29d
+- App tests: 264/264 pass (+6 from isVerified)
+- forge tests: 89/89 pass (unit only, no fork)
+- tsc: clean
+- bun run build: exit 0
+
+---
+
 ## Turn 29c (UX audit part 3: one proof verdict, loading state, layout shift, tap targets)
 
 No contracts changed. No transactions. No deployments.

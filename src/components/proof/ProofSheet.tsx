@@ -105,10 +105,10 @@ function StatusMark({ status }: { status: CheckStatus }) {
   );
 }
 
-function CheckRow({ check, pending }: { check: CheckResult | null; pending: boolean }) {
+function CheckRow({ check, pending, rowId }: { check: CheckResult | null; pending: boolean; rowId: string }) {
   const [open, setOpen] = useState(false);
-  const id = check?.id ?? '';
-  const title = check ? (CHECK_TITLES[check.id] ?? check.title) : (CHECK_TITLES[id] ?? id);
+  const id = check?.id ?? rowId;
+  const title = check ? (CHECK_TITLES[check.id] ?? check.title) : (CHECK_TITLES[rowId] ?? rowId);
 
   return (
     <div style={{ position: 'relative' }}>
@@ -318,7 +318,7 @@ export const ProofSheet = forwardRef<ProofSheetHandle, Props>(
                 key={id}
                 style={{ borderBottom: isLast ? 'none' : '1px solid var(--rule)' }}
               >
-                <CheckRow check={check} pending={pending} />
+                <CheckRow check={check} pending={pending} rowId={id} />
               </div>
             );
           })}

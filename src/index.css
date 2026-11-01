@@ -167,9 +167,10 @@ button:disabled {
     display: inline-flex !important;
     align-items: center !important;
   }
-  /* Footer nav links (29px tall). */
+  /* Footer nav links (29px tall, some narrower than 44px wide). */
   .footer-link {
     min-height: 44px !important;
+    min-width: 44px !important;
     display: inline-flex !important;
     align-items: center !important;
     padding-bottom: 0 !important;
@@ -184,14 +185,24 @@ button:disabled {
   .studio-badge {
     min-height: 44px !important;
   }
-  /* CopyButton inside the /p address line: 44x44 hit area via padding + negative margin. */
+  /* CopyButton inside the /p address line: 44x44 hit area. */
   .copy-address-btn {
-    padding: 14px 10px !important;
-    margin: -14px -6px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
   /* Secondary buttons already 40px; need 44px. */
   .btn-secondary {
     min-height: 44px !important;
+  }
+  /* "Every payslip from this payroll" link in the card (19px tall). */
+  .every-payslip-link {
+    min-height: 44px !important;
+    display: inline-flex !important;
+    align-items: center !important;
   }
   /* Phone payslip tx links (15px tall). */
   .mobile-tx-link {
@@ -202,6 +213,7 @@ button:disabled {
   /* /new period buttons. */
   .period-btn {
     min-height: 44px !important;
+    height: 44px !important;
   }
   /* Docs mobile menu bar (41px) and on-this-page toggle (38px). */
   .docs-mobile-menu-bar button,

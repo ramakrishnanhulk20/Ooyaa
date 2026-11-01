@@ -1,5 +1,5 @@
 import { test, expect, describe } from "bun:test";
-import { mergeChecks } from "./mergeChecks.js";
+import { mergeChecks, isVerified } from "./mergeChecks.js";
 import type { CheckResult } from "./checks.js";
 
 function r(
@@ -95,5 +95,50 @@ describe("mergeChecks", () => {
     // Neither line should be prefixed again since they already start with 0x.
     expect(out[0].lines[0]).toBe("0xAAAA...AAAA: isPayroll() = true");
     expect(out[0].lines[1]).toBe("0xBBBB...BBBB: isPayroll() = true");
+  });
+});
+
+const ALL_IDS = ["C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8"];
+
+function allPass(): CheckResult[] {
+  return ALL_IDS.map(id => r(id, "PASS"));
+}
+
+describe("isVerified", () => {
+  test("all 8 PASS gives true", () => {
+    expect(isVerified(allPass())).toBe(true);
+  });
+
+  test("all PASS for demo plus C8 SKIP for a second payroll gives true", () => {
+    const demo = "0xf03714EA422237BCb5d1B0BDd40B4Ff22B13717A" as `0x${string}`;
+    const other = "0x153EEF6d062037d55a192FE4474f8A07a90EbAEa" as `0x${string}`;
+    // C8 PASS on demo merges with C8 SKIP on other to PASS.
+    const checks: CheckResult[] = [
+      ...ALL_IDS.slice(0, 7).map(id => r(id, "PASS")),
+      r("C8", "PASS", ["reverted NothingDue"], demo),
+      r("C8", "SKIP", ["no paydays"], other),
+    ];
+    expect(isVerified(checks)).toBe(true);
+  });
+
+  test("a FAIL on any check gives false", () => {
+    const checks = allPass();
+    checks[3] = r("C4", "FAIL");
+    expect(isVerified(checks)).toBe(false);
+  });
+
+  test("a SKIP on any check (standalone) gives false", () => {
+    const checks = allPass();
+    checks[7] = r("C8", "SKIP");
+    expect(isVerified(checks)).toBe(false);
+  });
+
+  test("missing an id gives false", () => {
+    const checks = allPass().slice(0, 7);
+    expect(isVerified(checks)).toBe(false);
+  });
+
+  test("empty array gives false", () => {
+    expect(isVerified([])).toBe(false);
   });
 });
