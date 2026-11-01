@@ -621,6 +621,22 @@ tracing.ts called `Object.defineProperty(window, 'ethereum', ...)` on every page
 
 ---
 
+## Turn 28 (C3 accepts payrolls made after launch by code identity)
+
+No contracts changed. No transactions. No deployments.
+
+### Edited files
+- `src/proof/prove.ts`: exported `buildC3` pure helper; C3 block now calls it; four fixed addresses (mainnet factory, demo payroll, testnet factory, testnet reference) still use Sourcify; every other factory payroll is evaluated by runtime equality against `trRuntime` (testnet reference); FAIL beats SKIP beats PASS across all lines.
+- `src/proof/proveC3.test.ts`: new test file; 5 tests covering equal-runtime PASS, different-runtime FAIL, demo 404 FAIL, FAIL-beats-SKIP, and no-extra-payrolls PASS.
+
+### Test counts after turn 28
+- App tests: 241/241 pass
+- tsc: clean
+- bun run build: exit 0
+- bun run prove: C3 PASS; 0x153E...EbAEa shows code-identity line
+
+---
+
 ## Turn 27 (hero button runs payday)
 
 No contracts changed. No transactions. No deployments.

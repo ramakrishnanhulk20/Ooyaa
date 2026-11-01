@@ -12,6 +12,7 @@ import {
 import { payrollAbi, factoryAbi, erc20Abi } from "./abi.js";
 import { ARC_MAINNET, ARC_TESTNET, USDC_ADDRESS } from "../deployments.js";
 import { runtimeEquals, sourcifyStatus } from "./code.js";
+import type { SourcifyStatus } from "./code.js";
 import { findCreationBlock, fetchPayrollHistory } from "./history.js";
 import { checkC5, checkC6, checkC7, summarizeLedger, combineStatus } from "./checks.js";
 import { periodDisplayLabel } from "../payroll/format.js";
@@ -54,6 +55,59 @@ export type ProofReport = {
 
 function keccakShort(runtime: Hex): string {
   return keccak256(runtime);
+}
+
+function shortAddr(a: string): string {
+  return `${a.slice(0, 6)}...${a.slice(-4)}`;
+}
+
+/**
+ * Pure C3 evaluation: takes pre-resolved Sourcify statuses for the four fixed
+ * addresses, the set of extra factory payrolls (all except the demo payroll),
+ * their on-chain runtimes, and the testnet reference runtime.
+ * Returns the C3 CheckResult.
+ * Exported so unit tests can exercise it without a live viem client.
+ */
+export function buildC3(opts: {
+  fixedTargets: Array<{ label: string; sourcify: SourcifyStatus }>;
+  extraPayrolls: Array<{ address: string; runtime: string }>;
+  testnetRefRuntime: string;
+}): CheckResult {
+  const lines: string[] = [];
+  const partialStatuses: Array<import("./checks.js").CheckStatus> = [];
+
+  for (const { label, sourcify } of opts.fixedTargets) {
+    if (typeof sourcify === "object") {
+      lines.push(`${label}: unreachable (${sourcify.unreachable})`);
+      partialStatuses.push("SKIP");
+    } else if (sourcify === "exact_match") {
+      lines.push(`${label}: exact_match`);
+      partialStatuses.push("PASS");
+    } else {
+      lines.push(`${label}: ${sourcify} (expected exact_match)`);
+      partialStatuses.push("FAIL");
+    }
+  }
+
+  for (const { address, runtime } of opts.extraPayrolls) {
+    const short = shortAddr(address);
+    if (runtimeEquals(runtime, opts.testnetRefRuntime)) {
+      lines.push(
+        `mainnet payroll ${short}: made by the factory after launch; its code is byte-identical to the Sourcify-verified reference payroll (see C2).`,
+      );
+      partialStatuses.push("PASS");
+    } else {
+      lines.push(`mainnet payroll ${short}: code differs from the verified reference payroll.`);
+      partialStatuses.push("FAIL");
+    }
+  }
+
+  return {
+    id: "C3",
+    title: "verified source",
+    status: combineStatus(partialStatuses),
+    lines,
+  };
 }
 
 const DEAD = "0x000000000000000000000000000000000000dEaD" as Address;
@@ -251,40 +305,39 @@ export async function prove(opts: {
     });
   }
 
-  // C3: Sourcify exact_match for all four addresses. FAIL beats SKIP beats PASS.
+  // C3: verified source.
+  //
+  // The four canonical addresses are checked against Sourcify directly.
+  // Every other factory payroll is accepted by code identity: if its runtime
+  // is byte-identical to the testnet reference (which Sourcify verifies as
+  // exact_match), it is the same verified source.  This avoids a Sourcify 404
+  // for payrolls created after launch that nobody has submitted to Sourcify.
   {
     progress("checking Sourcify");
-    const targets: Array<{ chainId: number; address: string; label: string }> = [
+
+    const demoPayroll = ARC_MAINNET.demoPayroll;
+
+    const fixedTargetDefs: Array<{ chainId: number; address: string; label: string }> = [
       { chainId: ARC_MAINNET.chainId, address: mainnetFactory, label: "mainnet factory" },
-      ...payrollAddrs.map(p => ({ chainId: ARC_MAINNET.chainId, address: p, label: `mainnet payroll ${p}` })),
+      { chainId: ARC_MAINNET.chainId, address: demoPayroll,    label: `mainnet payroll ${shortAddr(demoPayroll)}` },
       { chainId: ARC_TESTNET.chainId, address: testnetFactory, label: "testnet factory" },
       { chainId: ARC_TESTNET.chainId, address: testnetReference, label: "testnet reference payroll" },
     ];
-    const statuses = await Promise.all(targets.map(t => sourcifyStatus(t.chainId, t.address)));
-    const lines: string[] = [];
-    const partialStatuses: Array<import("./checks.js").CheckStatus> = [];
 
-    for (let i = 0; i < targets.length; i++) {
-      const s = statuses[i];
-      const label = targets[i].label;
-      if (typeof s === "object") {
-        lines.push(`${label}: unreachable (${s.unreachable})`);
-        partialStatuses.push("SKIP");
-      } else if (s === "exact_match") {
-        lines.push(`${label}: exact_match`);
-        partialStatuses.push("PASS");
-      } else {
-        lines.push(`${label}: ${s} (expected exact_match)`);
-        partialStatuses.push("FAIL");
-      }
-    }
+    const sourcifyStatuses = await Promise.all(
+      fixedTargetDefs.map(t => sourcifyStatus(t.chainId, t.address)),
+    );
 
-    pushCheck({
-      id: "C3",
-      title: "verified source",
-      status: combineStatus(partialStatuses),
-      lines,
-    });
+    const fixedTargets = fixedTargetDefs.map((t, i) => ({
+      label: t.label,
+      sourcify: sourcifyStatuses[i],
+    }));
+
+    const extraPayrolls = payrollAddrs
+      .filter(p => p.toLowerCase() !== demoPayroll.toLowerCase())
+      .map(p => ({ address: p, runtime: payrollRuntimes.get(p) ?? "0x" }));
+
+    pushCheck(buildC3({ fixedTargets, extraPayrolls, testnetRefRuntime: trRuntime }));
   }
 
   // Typed PayrollCreated ABI entry for event-based creation block lookup.
