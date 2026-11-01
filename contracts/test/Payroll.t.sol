@@ -1688,7 +1688,7 @@ contract PayrollTest is Test {
     //   call{gas: 49,000} must fail (insufficient budget).
     //   call{gas: 56,000} must succeed (budget covers TARGET_TOTAL + dispatch).
     // 56,000 = 50,000 (body+burn) + ~6,000 (call dispatch, argument decode,
-    // blocklist check, return handling) -- generous upper bound.
+    // blocklist check, return handling): generous upper bound.
     // These limits are independent of slot warmth, so the test passes in both
     // shared and isolated (--isolate) Foundry modes.
     // =========================================================================
@@ -1878,12 +1878,12 @@ contract PayrollTest is Test {
     // GasBurnAtTarget.TARGET_TOTAL = 106,500 (burn-last technique): every transfer()
     // to burnTarget consumes exactly 106,500 gas regardless of slot warmth.
     //
-    // Part A -- payroll run assertions:
+    // Part A: payroll run assertions.
     //   Both payees paid (2 PayslipIssued, 0 PayoutDeferred) when run() uses its
     //   normal 110,000-gas budget.  Passes in shared and isolated modes because the
     //   total cost (106,500) is constant.
     //
-    // Part B -- direct call assertions (item 2):
+    // Part B: direct call assertions (item 2).
     //   call{gas: 110,000} to transfer(burnTarget, amount) must succeed.
     //   call{gas: 100,000} to transfer(burnTarget, amount) must fail (106,500 > 100,000).
     //   These two calls pin the pass/fail boundary across both Foundry modes.

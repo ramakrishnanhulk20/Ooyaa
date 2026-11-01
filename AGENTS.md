@@ -644,6 +644,35 @@ No contracts changed. No transactions. No deployments.
 
 ---
 
+## Turn 29c (UX audit part 3: one proof verdict, loading state, layout shift, tap targets)
+
+No contracts changed. No transactions. No deployments.
+
+### Key changes
+- `src/proof/mergeChecks.ts`: new. Collapses per-payroll C4..C8 results into one row per id. FAIL beats SKIP beats PASS. Lines from multiple payrolls prefixed with short address.
+- `src/proof/checks.ts`: `CheckResult` gains optional `payroll?: Address`.
+- `src/proof/prove.ts`: C4..C8 results tagged with payroll address via `taggedCheck()`. `onPayrolls` callback fires once payrolls are enumerated.
+- `src/proof/useProofReport.ts`: `toProofStatus()` maps TanStack Query v5 'pending' to 'loading'; removes the `as ProofStatus` cast. Exposes `payrollCount`.
+- `src/components/proof/ProofSheet.tsx`: renders from `mergeChecks(checks)`. `allDone = status === 'success'`. Footer always in layout (visibility:hidden until done). Stamp never toggles display. Progress uses "Check N of 8: ..." (no &mdash;).
+- `src/pages/ProofPage.tsx`: stamp fires on `status === 'success'`, not count. Passes `payrollCount` to TotalsBand.
+- `src/components/proof/TotalsBand.tsx`: shows "Read so far: k of n payrolls..." while loading. `useCountUp` never decreases.
+- `src/pages/PayrollPage.tsx`: employer+contract line is an inline `<p>` sentence (no flex-gap before comma). CopyButton gets `copy-address-btn` class.
+- `src/index.css`: tap-target rules for logo links, footer links, badge, copy button, secondary buttons, mobile tx links, period buttons, docs controls.
+- `src/components/Nav.tsx`: `nav-logo-link` class.
+- `src/components/Footer.tsx`: `footer-logo-link` and `footer-factory-link` classes.
+- `src/components/create/CreateForm.tsx`: `period-btn` class.
+- `src/pages/DocsPage.tsx`: `docs-otp-toggle` class on MobileOnThisPage button.
+- ~50 ` -- ` comment dashes replaced across src/, scripts/, contracts/test/, contracts/test-helpers/.
+- `scripts/gen-abi.ts` and `src/proof/abi.ts` header updated to remove ` -- `.
+
+### Test counts after turn 29c
+- App tests: 258/258 pass (+10 from mergeChecks.test.ts and toProofStatus.test.ts)
+- forge tests: see commit
+- tsc: clean
+- bun run build: exit 0
+
+---
+
 ## Turn 29b (UX audit part 2: contrast, focus, tap targets, docs, proof layout, link previews)
 
 No contracts changed. No transactions. No deployments.

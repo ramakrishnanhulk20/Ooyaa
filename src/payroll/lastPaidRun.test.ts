@@ -145,7 +145,7 @@ describe('lastPaidRun', () => {
   test('summarizeRunReceipt ignores PayslipIssued from a different address', () => {
     const receipt = fakeReceipt(OTHER);
     const result = summarizeRunReceipt(receipt, PAYROLL);
-    // Receipt has logs only from OTHER, not PAYROLL -- payslips must be empty.
+    // Receipt has logs only from OTHER, not PAYROLL: payslips must be empty.
     expect(result.payslips).toHaveLength(0);
     expect(result.txHash).toBe(TX);
   });

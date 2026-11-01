@@ -1,6 +1,6 @@
 /**
  * Pure utilities for the payslip list sections.
- * No React, no viem client calls -- safe to import in tests.
+ * No React, no viem client calls: safe to import in tests.
  */
 import type { LedgerRow } from '../../proof/rows.js';
 import { periodDisplayLabel } from '../../payroll/format.js';
@@ -25,7 +25,7 @@ function fmtUtc(ts: bigint | undefined): string {
  * Builds a CSV of payslip rows for a specific payee.
  * Two columns for the period: period_index (0-based contract value) and
  * period_label (1-based display number, "Period 0038" for index 37).
- * "Period 0038 is contract period index 37." -- see docs.
+ * "Period 0038 is contract period index 37." See docs.
  */
 export function buildPayeeCsv(rows: LedgerRow[], payroll: Address): string {
   const header = 'when_utc,period_index,period_label,amount_usdc,tx,payroll';

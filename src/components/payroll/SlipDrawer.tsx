@@ -1,5 +1,5 @@
 /**
- * C.5 -- the right-side payslip drawer.
+ * C.5: the right-side payslip drawer.
  * Opens when a payslip row is clicked or when ?slip=<txHash>-<logIndex> is in the URL.
  * 440px wide on desktop, full-screen under 768px.
  * Focus is trapped while open and returns to the triggering row on close.

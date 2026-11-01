@@ -5,8 +5,8 @@ pragma solidity 0.8.28;
 ///      exactly TARGET_TOTAL gas units in total (burn + transfer body), regardless
 ///      of call context warmth.
 ///
-///      Technique (burn-last): the transfer body runs first -- balance updates and
-///      event -- then a spin loop burns gas until the total consumed since function
+///      Technique (burn-last): the transfer body runs first, balance updates and
+///      event, then a spin loop burns gas until the total consumed since function
 ///      entry reaches TARGET_TOTAL.  Because the burn fills the remainder after the
 ///      body, the total is constant even when balance slots are cold (isolated mode)
 ///      or warm (shared mode).

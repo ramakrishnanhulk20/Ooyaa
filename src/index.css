@@ -160,6 +160,60 @@ button:disabled {
     padding: 12px 8px !important;
     display: inline-block !important;
   }
+  /* Nav and footer logo links: give the whole flex row a 44px min-height. */
+  .nav-logo-link,
+  .footer-logo-link {
+    min-height: 44px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+  /* Footer nav links (29px tall). */
+  .footer-link {
+    min-height: 44px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    padding-bottom: 0 !important;
+  }
+  /* Footer factory address link (17px). */
+  .footer-factory-link {
+    min-height: 44px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+  /* Studio badge: already static on mobile, but may be only 36px tall. */
+  .studio-badge {
+    min-height: 44px !important;
+  }
+  /* CopyButton inside the /p address line: 44x44 hit area via padding + negative margin. */
+  .copy-address-btn {
+    padding: 14px 10px !important;
+    margin: -14px -6px !important;
+  }
+  /* Secondary buttons already 40px; need 44px. */
+  .btn-secondary {
+    min-height: 44px !important;
+  }
+  /* Phone payslip tx links (15px tall). */
+  .mobile-tx-link {
+    display: inline-flex !important;
+    align-items: center !important;
+    min-height: 44px !important;
+  }
+  /* /new period buttons. */
+  .period-btn {
+    min-height: 44px !important;
+  }
+  /* Docs mobile menu bar (41px) and on-this-page toggle (38px). */
+  .docs-mobile-menu-bar button,
+  .docs-otp-toggle {
+    min-height: 44px !important;
+  }
+  /* Heading anchors in doc body (34px line-height). */
+  .heading-anchor {
+    min-height: 44px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
 }
 
 /* Draft preview: fade-in animation for changed values. */

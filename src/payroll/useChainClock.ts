@@ -6,7 +6,7 @@ import { arc } from 'viem/chains';
 export function useChainClock(): bigint {
   // offset = blockTimestamp * 1000 - Date.now() at last sync
   const offsetRef = useRef<number>(0);
-  // Lazy initializer avoids calling Date.now during render -- it runs once, not on every re-render.
+  // Lazy initializer avoids calling Date.now during render: it runs once, not on every re-render.
   const [nowChain, setNowChain] = useState<bigint>(() => BigInt(Math.floor(Date.now() / 1000)));
 
   useEffect(() => {

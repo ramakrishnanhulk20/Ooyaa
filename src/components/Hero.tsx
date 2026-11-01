@@ -85,7 +85,7 @@ export function Hero() {
       setTimeout(() => el.focus(), 500);
     }
 
-    // Trigger the run flow immediately -- no waiting for the scroll to finish.
+    // Trigger the run flow immediately, without waiting for the scroll to finish.
     cardRef.current?.press();
     // Flash the card outline so the visitor sees where the action landed.
     cardRef.current?.highlight();

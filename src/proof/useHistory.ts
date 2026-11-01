@@ -1,5 +1,5 @@
 /**
- * useHistory(payroll, fromBlock) -- shared React hook for all payroll history
+ * useHistory(payroll, fromBlock): shared React hook for all payroll history.
  * consumers on the browser (EveryPayslip, YourPayslips, the card's lastPaidRun,
  * and the proof page).
  *

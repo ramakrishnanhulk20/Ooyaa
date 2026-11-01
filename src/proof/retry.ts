@@ -36,7 +36,7 @@ export async function withRetry<T>(
     try {
       return await fn();
     } catch (err) {
-      // Contract reverts are deterministic -- retrying will not help.
+      // Contract reverts are deterministic: retrying will not help.
       if (isContractRevert(err)) throw err;
 
       if (isRateLimit(err) && attempt < BACKOFF_SECONDS.length) {

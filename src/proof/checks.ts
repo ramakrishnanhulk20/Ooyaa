@@ -12,6 +12,8 @@ export type CheckResult = {
   title: string;
   status: CheckStatus;
   lines: string[];
+  /** Set on per-payroll results (C4..C8); absent on C1..C3. */
+  payroll?: import("viem").Address;
 };
 
 function pass(id: string, title: string, lines: string[]): CheckResult {
@@ -243,7 +245,7 @@ export function checkC5(
   const events: AnyParsedEvent[] = history.events;
   const runs = filterName(events, "PaydayRun");
 
-  // Sort by (blockNumber, logIndex) -- chronological order.
+  // Sort by (blockNumber, logIndex) for chronological order.
   runs.sort((x, y) =>
     x.blockNumber !== y.blockNumber
       ? Number(x.blockNumber - y.blockNumber)

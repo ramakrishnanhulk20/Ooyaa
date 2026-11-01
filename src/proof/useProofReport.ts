@@ -10,6 +10,16 @@ import type { Address } from 'viem';
 
 export type ProofStatus = 'idle' | 'loading' | 'success' | 'error';
 
+/**
+ * TanStack Query v5 uses 'pending' where v4 used 'loading' / 'idle'.
+ * This function normalises the raw query status to the ProofStatus the UI
+ * expects, so the cast `status as ProofStatus` is no longer needed.
+ */
+export function toProofStatus(s: 'pending' | 'error' | 'success'): ProofStatus {
+  if (s === 'pending') return 'loading';
+  return s;
+}
+
 export type StreamedLedger = {
   payroll: Address;
   ledger: Ledger;
@@ -22,6 +32,7 @@ export function useProofReport() {
   const [checks, setChecks] = useState<CheckResult[]>([]);
   const [progress, setProgress] = useState<string>('');
   const [streamedLedgers, setStreamedLedgers] = useState<StreamedLedger[]>([]);
+  const [payrollCount, setPayrollCount] = useState<number | null>(null);
   // Refs accumulate during the query so callbacks are stable across re-renders.
   const checksRef = useRef<CheckResult[]>([]);
   const ledgersRef = useRef<StreamedLedger[]>([]);
@@ -32,6 +43,7 @@ export function useProofReport() {
     setChecks([]);
     setProgress('');
     setStreamedLedgers([]);
+    setPayrollCount(null);
   }, []);
 
   const { data: report, status, error } = useQuery<ProofReport, Error>({
@@ -53,6 +65,7 @@ export function useProofReport() {
         archive: archiveClient,
         localRuntime: LOCAL_RUNTIME,
         onProgress: (msg) => setProgress(msg),
+        onPayrolls: (ps) => setPayrollCount(ps.length),
         onCheck: (c) => {
           checksRef.current = [...checksRef.current, c];
           setChecks([...checksRef.current]);
@@ -88,7 +101,8 @@ export function useProofReport() {
     checks,
     progress,
     streamedLedgers,
-    status: status as ProofStatus,
+    payrollCount,
+    status: toProofStatus(status),
     error: error ?? null,
     rerun,
   };

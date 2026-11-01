@@ -1,5 +1,5 @@
 /**
- * /docs and /docs/:slug -- the docs reader.
+ * /docs and /docs/:slug: the docs reader.
  * Three-column layout on desktop: sidebar (240px), content (max 720px), on-this-page (200px).
  * Sidebar becomes a sheet on mobile. On-this-page collapses under the h1 on mobile.
  * Routes: /docs -> overview, /docs/:slug, unknown slug shows an error message.
@@ -136,6 +136,7 @@ function MobileOnThisPage({ headings }: { headings: ReturnType<typeof extractHea
     <div style={{ marginBottom: '32px' }}>
       <button
         onClick={() => setOpen(o => !o)}
+        className="docs-otp-toggle"
         style={{
           background: 'none',
           border: '1px solid var(--rule)',
@@ -365,7 +366,7 @@ export function DocsPage() {
       <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 48px' }} className="docs-outer">
         <div style={{ display: 'flex', gap: '48px', alignItems: 'flex-start', paddingTop: '48px', paddingBottom: '0' }}>
 
-          {/* Left sidebar -- sticky, desktop only */}
+          {/* Left sidebar: sticky, desktop only. */}
           <aside style={{
             width: '240px',
             flexShrink: 0,
@@ -416,7 +417,7 @@ export function DocsPage() {
               </div>
             ) : (
               <>
-                {/* Page title h1 -- visible on all viewports */}
+                {/* Page title h1: visible on all viewports. */}
                 <h1 style={{
                   fontFamily: '"Fraunces Variable", Georgia, serif',
                   fontVariationSettings: '"opsz" 144, "SOFT" 0, "WONK" 0',
@@ -440,7 +441,7 @@ export function DocsPage() {
             )}
           </main>
 
-          {/* Right: On this page -- sticky, desktop only */}
+          {/* Right: On this page, sticky, desktop only. */}
           <aside style={{
             width: '200px',
             flexShrink: 0,

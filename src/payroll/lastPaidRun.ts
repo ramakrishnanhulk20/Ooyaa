@@ -71,7 +71,7 @@ export function summarizeRunReceipt(
 }
 
 // Searches backwards in 10,000-block windows, newest first.
-// Errors from the client propagate to the caller -- no swallowing.
+// Errors from the client propagate to the caller: no swallowing.
 // client defaults to mainnetClient (QuickNode->Arc fallback) so callers do not
 // need to wire up their own transport.
 export async function lastPaidRun(

@@ -1,5 +1,5 @@
 /**
- * /p/:address -- the page for any payroll made by Ooyaa's factory.
+ * /p/:address: page for any payroll made by Ooyaa's factory.
  * Sections A (guards), B (header + card), B.2 (employer panel),
  * C.3 (Your payslips with claim button), C.4 (Every payslip),
  * and C.5 (slip drawer + ?slip= link) are all here.
@@ -44,6 +44,7 @@ function CopyButton({ text }: { text: string }) {
     <button
       onClick={copy}
       title="Copy address"
+      className="copy-address-btn"
       style={{
         background: 'none',
         border: 'none',
@@ -218,41 +219,39 @@ function PayrollHeader({
           </p>
         )}
 
-        {/* Employer + contract address line */}
-        <div style={{
-          fontFamily: '"IBM Plex Mono", monospace',
-          fontSize: '0.8125rem',
-          color: 'var(--ink-3)',
-          display: 'flex',
-          flexWrap: 'wrap' as const,
-          alignItems: 'center',
-          gap: '4px',
-          minWidth: 0,
-        }}>
-          {employer && (
-            <>
-              <span>Employer</span>
-              <a
-                href={`${explorerBase}/address/${state?.employer ? getAddress(state.employer) : ''}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: 'var(--ink-3)', textDecoration: 'underline', wordBreak: 'break-all' }}
-              >
-                {employer}
-              </a>
-              <span style={{ margin: '0 0 0 2px' }}>, contract</span>
-              <a
-                href={`${explorerBase}/address/${getAddress(payroll)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: 'var(--ink-3)', textDecoration: 'underline', wordBreak: 'break-all' }}
-              >
-                {shortAddress(getAddress(payroll))}
-              </a>
-              <CopyButton text={getAddress(payroll)} />
-            </>
-          )}
-        </div>
+        {/* Employer + contract address line: inline sentence so no flex-gap
+            sits before the comma. Wraps between words only on narrow screens. */}
+        {employer && (
+          <p style={{
+            fontFamily: '"IBM Plex Mono", monospace',
+            fontSize: '0.8125rem',
+            color: 'var(--ink-3)',
+            margin: '0',
+            wordBreak: 'keep-all',
+            overflowWrap: 'anywhere',
+            lineHeight: 1.6,
+          }}>
+            {'Employer '}
+            <a
+              href={`${explorerBase}/address/${state?.employer ? getAddress(state.employer) : ''}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: 'var(--ink-3)', textDecoration: 'underline' }}
+            >
+              {employer}
+            </a>
+            {', contract '}
+            <a
+              href={`${explorerBase}/address/${getAddress(payroll)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: 'var(--ink-3)', textDecoration: 'underline' }}
+            >
+              {shortAddress(getAddress(payroll))}
+            </a>
+            <CopyButton text={getAddress(payroll)} />
+          </p>
+        )}
       </div>
 
       {/* Right column: the live card */}
@@ -427,7 +426,7 @@ function PayrollPageInner({ payroll }: { payroll: Address }) {
   }, [searchParams, payrollContractState?.startTime]);
 
   // ?slip= deep link: fire in a microtask so the effect itself is not a synchronous
-  // setState call -- openDrawer is called after the effect exits.
+  // setState call: openDrawer is called after the effect exits.
   const slipParamHandled = useRef(false);
   useEffect(() => {
     if (slipParamHandled.current || allRows.length === 0) return;
@@ -501,7 +500,7 @@ function PayrollPageInner({ payroll }: { payroll: Address }) {
         <PayrollHeader payroll={payroll} creationBlock={creationBlock ?? null} onSlipClick={handleCardSlipClick} />
       )}
 
-      {/* B.2: Employer panel -- EmployerPanel renders null unless the connected
+      {/* B.2: Employer panel. EmployerPanel renders null unless the connected
             wallet matches the employer, so no condition needed here. */}
       {payrollContractState && (
         <EmployerPanel

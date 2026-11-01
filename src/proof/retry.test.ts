@@ -39,7 +39,7 @@ describe("withRetry", () => {
       threw = true;
     }
     expect(threw).toBe(true);
-    // Only one attempt -- retrying a revert is pointless.
+    // Only one attempt: retrying a revert is pointless.
     expect(calls).toBe(1);
   });
 

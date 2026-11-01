@@ -153,6 +153,7 @@ export async function prove(opts: {
   localRuntime?: { factory: Hex; payroll: Hex };
   onProgress?: (msg: string) => void;
   onCheck?: (c: CheckResult) => void;
+  onPayrolls?: (payrolls: Address[]) => void;
   onLedger?: (l: { payroll: Address; ledger: Ledger; history: PayrollHistory; employer: Address }) => void;
   /** Limits C8 to only the N most recent runs. When absent, all runs are checked. */
   recentRunsOnly?: number;
@@ -238,6 +239,9 @@ export async function prove(opts: {
       payrollAddrs.push(addr);
     }
   }
+
+  // Notify the caller with the full payroll list once it is known.
+  opts.onPayrolls?.(payrollAddrs);
 
   const payrollRuntimes = new Map<Address, Hex>();
   for (const p of payrollAddrs) {
@@ -352,6 +356,12 @@ export async function prove(opts: {
   for (const payroll of payrollAddrs) {
     progress(`processing payroll ${payroll}`);
 
+    // All per-payroll checks (C4..C8) carry the payroll address so mergeChecks
+    // can group lines by payroll when multiple payrolls produce the same check id.
+    function taggedCheck(c: import("./checks.js").CheckResult): import("./checks.js").CheckResult {
+      return { ...c, payroll: getAddress(payroll) };
+    }
+
     // C4: made by the factory.
     const isPayrollResult = await retry(
       () => mainnet.readContract({
@@ -365,12 +375,12 @@ export async function prove(opts: {
     );
 
     if (!isPayrollResult) {
-      pushCheck({
+      pushCheck(taggedCheck({
         id: "C4",
         title: "made by the factory",
         status: "FAIL",
         lines: [`${payroll}: isPayroll() returned false`],
-      });
+      }));
       continue;
     }
 
@@ -398,28 +408,28 @@ export async function prove(opts: {
         evtChunk,
       );
       if (creationLogs.length === 0) {
-        pushCheck({
+        pushCheck(taggedCheck({
           id: "C4",
           title: "made by the factory",
           status: "FAIL",
           lines: [
             `${payroll}: isPayroll() = true but PayrollCreated event not found`,
           ],
-        });
+        }));
         continue;
       }
       const bn = creationLogs[0].blockNumber;
       if (bn === null) {
-        pushCheck({
+        pushCheck(taggedCheck({
           id: "C4",
           title: "made by the factory",
           status: "FAIL",
           lines: [`${payroll}: PayrollCreated event has no blockNumber (pending log?)`],
-        });
+        }));
         continue;
       }
       creationBlock = bn;
-      pushCheck({
+      pushCheck(taggedCheck({
         id: "C4",
         title: "made by the factory",
         status: "PASS",
@@ -427,7 +437,7 @@ export async function prove(opts: {
           `${payroll}: isPayroll() = true, creation block ${creationBlock}`,
           `PayrollCreated event found: yes`,
         ],
-      });
+      }));
     } else {
       progress(`finding creation block for ${payroll}`);
       creationBlock = await findCreationBlock(
@@ -447,12 +457,12 @@ export async function prove(opts: {
         `${payroll}: isPayroll() = true, creation block ${creationBlock}`,
         `PayrollCreated event found: ${creationLogs.length > 0 ? "yes" : "NO"}`,
       ];
-      pushCheck({
+      pushCheck(taggedCheck({
         id: "C4",
         title: "made by the factory",
         status: creationLogs.length > 0 ? "PASS" : "FAIL",
         lines: c4Lines,
-      });
+      }));
       if (creationLogs.length === 0) continue;
     }
 
@@ -545,9 +555,9 @@ export async function prove(opts: {
       periodLength: parsedState.periodLength,
     };
 
-    const c5 = checkC5(history, parsedState.nextUnpaid);
-    const c6 = checkC6(history);
-    const c7 = checkC7(history, balanceBefore, balanceAfter, stateForLedger);
+    const c5 = taggedCheck(checkC5(history, parsedState.nextUnpaid));
+    const c6 = taggedCheck(checkC6(history));
+    const c7 = taggedCheck(checkC7(history, balanceBefore, balanceAfter, stateForLedger));
     const ledgerSummary = summarizeLedger(history, balanceBefore, balanceAfter, stateForLedger);
     opts.onCheck?.(c5);
     opts.onCheck?.(c6);
@@ -572,7 +582,7 @@ export async function prove(opts: {
     let c8: CheckResult;
 
     if (runs.length === 0) {
-      c8 = { id: "C8", title: "a second run is refused", status: "SKIP", lines: ["no paydays yet"] };
+      c8 = taggedCheck({ id: "C8", title: "a second run is refused", status: "SKIP", lines: ["no paydays yet"] });
     } else {
       // Sort descending by block; find the newest caught-up run using only history data.
       const sortedRuns = [...runs].sort((a, b) => Number(b.blockNumber - a.blockNumber));
@@ -608,10 +618,10 @@ export async function prove(opts: {
       }
 
       if (testBlock === null) {
-        c8 = {
+        c8 = taggedCheck({
           id: "C8", title: "a second run is refused", status: "SKIP",
           lines: ["Every run so far was followed by another owed payday, so there was no moment to test a second run."],
-        };
+        });
       } else {
         const blockLabel = testBlock.toLocaleString("en-US");
         const periodLabel = testPeriod !== null
@@ -642,11 +652,11 @@ export async function prove(opts: {
           }
         }
 
-        c8 = {
+        c8 = taggedCheck({
           id: "C8", title: "a second run is refused",
           status: testNothingDue ? "PASS" : "FAIL",
           lines: c8Lines,
-        };
+        });
       }
     }
 

@@ -34,7 +34,7 @@ const ARC_CHAIN_ID = ARC_MAINNET.chainId;
 export type PayrollCardHandle = {
   stampAll: (kind: StampKind) => void;
   /**
-   * Programmatically trigger the card's Run payday button -- same simulate-first
+   * Programmatically trigger the card's Run payday button (same simulate-first
    * flow as clicking it. Does nothing when the card is already busy (checking,
    * signing, or pending) so the hero button is safe to call without a guard.
    */
@@ -309,7 +309,7 @@ export const PayrollCard = forwardRef<PayrollCardHandle, PayrollCardProps>(
     }
 
     // Period index to pass to Payslip.
-    // Due state: show the next unpaid period (nextUnpaid) -- the one about to be run.
+    // Due state: show the next unpaid period (nextUnpaid), the one about to be run.
     // Idle state: show the last paid period (lastPaidPeriod = nextUnpaid - 1).
     // Just-paid (runState): show the period that was just paid.
     function slipPeriodFor(): bigint {
@@ -662,7 +662,7 @@ export const PayrollCard = forwardRef<PayrollCardHandle, PayrollCardProps>(
           </div>
         )}
 
-        {/* Every payslip link -- hidden when already on this payroll's own page. */}
+        {/* Every payslip link, hidden when already on this payroll's own page. */}
         {!onPayrollPage && (
           <div style={{ marginTop: '16px' }}>
             <Link

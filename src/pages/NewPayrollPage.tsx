@@ -1,5 +1,5 @@
 /**
- * /new -- the create-your-own-payroll page.
+ * /new: the create-your-own-payroll page.
  * Left: label, h1, sub and the form.
  * Right (desktop): sticky DraftPreview card.
  * Mobile: form first, then a collapsed "Preview" disclosure.

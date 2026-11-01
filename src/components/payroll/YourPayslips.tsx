@@ -1,5 +1,5 @@
 /**
- * C.3 -- "Your payslips" band.
+ * C.3: "Your payslips" band.
  * Shows only when a wallet is connected and its address appears in the payee list
  * or in the ledger rows (covers historical payees no longer in the active list).
  * No signature is needed; all data comes from on-chain events already fetched.

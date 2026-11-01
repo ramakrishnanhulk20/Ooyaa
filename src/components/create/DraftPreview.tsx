@@ -4,7 +4,7 @@
  * a schedule line and funded-for count. Updates on every keystroke; changed
  * values fade 150 ms so the user can see what changed.
  */
-// No useState needed -- FadeValue is a pure span.
+// No useState needed: FadeValue is a pure span.
 import { Link } from 'react-router-dom';
 import type { DraftPayroll } from '../../payroll/draft.js';
 import { parseUsdcInput, fundAmount, PERIOD_OPTIONS } from '../../payroll/draft.js';

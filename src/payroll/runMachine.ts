@@ -90,7 +90,7 @@ export function runReducer(state: RunState, event: RunEvent): RunState {
         };
       }
       // A receipt arriving after the 60s ERROR (reason 'other') is still valid
-      // when the hash matches the one we dispatched -- the tx landed eventually.
+      // when the hash matches the one we dispatched: the tx landed eventually.
       if (
         state.kind === 'failed' &&
         state.reason === 'other' &&

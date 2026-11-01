@@ -36,21 +36,29 @@ function useCountUp(target: number, active: boolean): number {
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // When no animation is needed, return the final value directly without an effect.
+  // Never restart from a lower number when new ledgers arrive mid-stream.
+  const floorRef = useRef(0);
   const [value, setValue] = useState(() => reducedMotion ? target : 0);
   const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!active) return;
     if (reducedMotion) return;
+    // The displayed value is already at floorRef.current from the previous run.
+    const from = floorRef.current;
+    if (target <= from) return;
     const start = performance.now();
     const duration = 900;
     function step(now: number) {
       const t = Math.min((now - start) / duration, 1);
-      // Ease-out quad.
       const eased = 1 - (1 - t) * (1 - t);
-      setValue(Math.round(eased * target));
-      if (t < 1) rafRef.current = requestAnimationFrame(step);
+      const next = Math.round(from + eased * (target - from));
+      setValue(next);
+      if (t < 1) {
+        rafRef.current = requestAnimationFrame(step);
+      } else {
+        floorRef.current = target;
+      }
     }
     rafRef.current = requestAnimationFrame(step);
     return () => { if (rafRef.current !== null) cancelAnimationFrame(rafRef.current); };
@@ -114,9 +122,11 @@ type Props = {
   ledgers: StreamedLedger[] | undefined;
   factory: string;
   loading: boolean;
+  /** Total payrolls found by the factory (set as soon as enumerate finishes). */
+  payrollCount: number | null;
 };
 
-export function TotalsBand({ ledgers, factory, loading }: Props) {
+export function TotalsBand({ ledgers, factory, loading, payrollCount }: Props) {
   const bandRef = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
 
@@ -193,7 +203,10 @@ export function TotalsBand({ ledgers, factory, loading }: Props) {
               margin: 0,
               textAlign: 'center',
             }}>
-              Across {(ledgers ?? []).length} payroll{(ledgers ?? []).length === 1 ? '' : 's'} made by the factory{' '}
+              {loading && payrollCount !== null
+                ? <>Read so far: {(ledgers ?? []).length} of {payrollCount} payroll{payrollCount === 1 ? '' : 's'} made by the factory{' '}</>
+                : <>Across {(ledgers ?? []).length} payroll{(ledgers ?? []).length === 1 ? '' : 's'} made by the factory{' '}</>
+              }
               <a
                 href={`${ARC_MAINNET.explorer}/address/${factory ? getAddress(factory) : factory}`}
                 target="_blank"

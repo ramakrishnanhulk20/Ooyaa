@@ -61,7 +61,7 @@ function countForkTests(): number {
   }
 }
 
-// Unit and invariant tests only -- fork tests need Arc's Foundry and a live fork.
+// Unit and invariant tests only; fork tests need Arc's Foundry and a live fork.
 const foundry = runForge(['test', '--no-match-path', 'contracts/test/PayrollFork.t.sol', '--json']);
 const forkTests = countForkTests();
 const app = runBunTest();

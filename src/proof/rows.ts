@@ -58,7 +58,7 @@ export function buildLedgerRows(history: PayrollHistory, _employer: Address): Le
   const withdrawn = filterName(events, 'Withdrawn');
   const funded = filterName(events, 'Funded');
 
-  // Per-tx consumed sets -- parallel to history.usdcOut and history.usdcIn arrays.
+  // Per-tx consumed sets, parallel to history.usdcOut and history.usdcIn arrays.
   const outConsumed = new Map<number, boolean>();
   const inConsumed = new Map<number, boolean>();
 

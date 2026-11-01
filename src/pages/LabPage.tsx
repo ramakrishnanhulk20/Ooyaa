@@ -11,7 +11,7 @@ const EXPLORER = ARC_MAINNET.explorer;
 const DEMO_PAYEE = '0x96E81DA285BB91B7D02eE3e6ad51Fa3cAf5daB75' as const;
 const DEMO_AMOUNT = 10000n;
 const DEMO_TX = '0x0692c42dd090bf022e41b9bb57d130ec6c1402615e0abb10d6ba9f1674c07fec' as const;
-// Computed at module load time, not during render -- avoids purity lint for Date.now.
+// Computed at module load time, not during render: avoids purity lint for Date.now.
 const NOW_CHAIN = BigInt(Math.floor(Date.now() / 1000));
 const DUE_AT = NOW_CHAIN + 3600n;
 
@@ -31,7 +31,7 @@ const TOKENS = [
  * /lab: design reference page. Only rendered in DEV builds.
  * Shows type A/B, three payslip states, stamp controls, and token swatches.
  */
-// Example ledger row data -- labelled EXAMPLE STATE in the lab, not from the network.
+// Example ledger row data, labelled EXAMPLE STATE in the lab, not from the network.
 const EX_RUNNER = '0x4444444444444444444444444444444444444444';
 const EX_PAYROLL = '0xf03714EA422237BCb5d1B0BDd40B4Ff22B13717A';
 const EX_TX = '0x0692c42dd090bf022e41b9bb57d130ec6c1402615e0abb10d6ba9f1674c07fec';

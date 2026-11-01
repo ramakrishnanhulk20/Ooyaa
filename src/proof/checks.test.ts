@@ -149,7 +149,7 @@ describe("C5: paid exactly once, in order", () => {
   });
 
   test("period 1 logged before period 0 fails", () => {
-    // Same tx, but period 1 has a lower logIndex than period 0 -- sorting by
+    // Same tx, but period 1 has a lower logIndex than period 0: sorting by
     // (blockNumber, logIndex) exposes the chronological violation.
     const h = makeHistory({
       events: [

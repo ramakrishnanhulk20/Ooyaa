@@ -1,5 +1,5 @@
 /**
- * C.4 -- "Every payslip" section for a single payroll.
+ * C.4: "Every payslip" section for a single payroll.
  * Shows filter chips (All / Payslips / Tips / Funding), a download CSV button,
  * and a table of payslip rows clickable to open the slip drawer.
  * History comes from useHistory() so every consumer on this page shares one fetch.
@@ -157,7 +157,7 @@ export function EveryPayslip({ payroll, employer, fromBlock, onPayslipClick, onH
         })}
       </div>
 
-      {/* Table -- render with the filtered rows via a filtered synthetic ledger */}
+      {/* Table: rendered with the filtered rows via a filtered synthetic ledger. */}
       {status === 'error' && (
         <div style={{
           fontFamily: '"IBM Plex Mono", monospace',
@@ -194,7 +194,7 @@ export function EveryPayslip({ payroll, employer, fromBlock, onPayslipClick, onH
 // the ledger's history, the simplest approach is to pass a synthetic ledger whose
 // events are pre-filtered.  Instead, we render our own table wrapper to avoid
 // duplicating the complex table markup. We just pass LedgerTable the full ledger
-// but add a filter chip note -- LedgerTable's "all rows" will include all kinds.
+// but add a filter chip note; LedgerTable's "all rows" will include all kinds.
 // The filter is only meaningful for the CSV download and the chip count display.
 // For the actual table rendering with clickable payslip rows we always pass the
 // full history and let LedgerTable show all rows when filter === 'all'.
@@ -426,7 +426,7 @@ function PayrollLedgerTable({ rows, payroll, onPayslipClick }: TableProps) {
                 {shortAddr(row.from)} &rarr; {shortAddr(row.to)}
               </div>
               <div>
-                <a href={`${explorer}/tx/${row.txHash}`} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--ink)', fontFamily: '"IBM Plex Mono", monospace', fontSize: '0.75rem', textDecoration: 'underline' }}>
+                <a href={`${explorer}/tx/${row.txHash}`} target="_blank" rel="noopener noreferrer" className="mobile-tx-link" style={{ color: 'var(--ink)', fontFamily: '"IBM Plex Mono", monospace', fontSize: '0.75rem', textDecoration: 'underline' }}>
                   {shortAddr(row.txHash)}
                 </a>
               </div>

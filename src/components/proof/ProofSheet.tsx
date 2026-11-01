@@ -1,9 +1,7 @@
 import { useState, useRef, forwardRef, useImperativeHandle, useCallback } from 'react';
 import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import type { CheckResult, CheckStatus } from '../../proof/checks.js';
-
-// Eight check ids in the canonical order prove() produces them.
-const CHECK_IDS = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8'] as const;
+import { mergeChecks, CHECK_ORDER as CHECK_IDS } from '../../proof/mergeChecks.js';
 const CHECK_TITLES: Record<string, string> = {
   C1: 'local build',
   C2: 'same code on mainnet and testnet',
@@ -227,13 +225,14 @@ export const ProofSheet = forwardRef<ProofSheetHandle, Props>(
 
     useImperativeHandle(ref, () => ({ stampVerified }), [stampVerified]);
 
-    const checksMap = new Map(checks.map(c => [c.id, c]));
-    const allDone = checks.length === 8;
-    const passed = checks.filter(c => c.status === 'PASS').length;
-    const failed = checks.filter(c => c.status === 'FAIL').length;
-    const skipped = checks.filter(c => c.status === 'SKIP').length;
-    const allPassed = allDone && failed === 0 && skipped === 0;
-
+    // Merge per-payroll results into one row per id before displaying.
+    const merged = mergeChecks(checks);
+    const checksMap = new Map(merged.map(c => [c.id, c]));
+    // The run is done only when the query has settled, not when a count is reached.
+    const allDone = status === 'success';
+    const passed = merged.filter(c => c.status === 'PASS').length;
+    const failed = merged.filter(c => c.status === 'FAIL').length;
+    const skipped = merged.filter(c => c.status === 'SKIP').length;
     const sheetRef = useRef<HTMLDivElement>(null);
 
     return (
@@ -274,7 +273,7 @@ export const ProofSheet = forwardRef<ProofSheetHandle, Props>(
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
           }}>
-            Check {Math.min(checks.length + 1, 8)} of 8 &mdash; {progress}
+            Check {Math.min(merged.length + 1, 8)} of 8: {progress}
           </div>
         )}
 
@@ -325,43 +324,43 @@ export const ProofSheet = forwardRef<ProofSheetHandle, Props>(
           })}
         </div>
 
-        {/* Footer when all done */}
-        {allDone && (
-          <div style={{
-            marginTop: '16px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '8px',
+        {/* Footer: always in layout so its height is reserved; hidden until done to prevent CLS. */}
+        <div style={{
+          marginTop: '16px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '8px',
+          visibility: allDone ? 'visible' : 'hidden',
+        }}>
+          <span style={{
+            fontFamily: '"IBM Plex Mono", monospace',
+            fontSize: '0.8125rem',
+            color: 'var(--ink-3)',
           }}>
-            <span style={{
-              fontFamily: '"IBM Plex Mono", monospace',
-              fontSize: '0.8125rem',
-              color: 'var(--ink-3)',
-            }}>
-              {passed} passed, {failed} failed, {skipped} skipped
-            </span>
-            <button
-              onClick={onRerun}
-              style={{
-                fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
-                fontWeight: 500,
-                fontSize: '0.875rem',
-                color: 'var(--ink)',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                padding: 0,
-                textDecoration: 'underline',
-              }}
-            >
-              Run again
-            </button>
-          </div>
-        )}
+            {passed} passed, {failed} failed, {skipped} skipped
+          </span>
+          <button
+            onClick={onRerun}
+            style={{
+              fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
+              fontWeight: 500,
+              fontSize: '0.875rem',
+              color: 'var(--ink)',
+              background: 'none',
+              border: 'none',
+              cursor: allDone ? 'pointer' : 'default',
+              padding: 0,
+              textDecoration: 'underline',
+            }}
+          >
+            Run again
+          </button>
+        </div>
 
-        {/* VERIFIED stamp: sits in the gap between C7 and C8 titles and their marks. */}
+        {/* VERIFIED stamp: always position:absolute so it never shifts adjacent rows.
+            Opacity and scale animate; display is never toggled. */}
         <motion.div
           animate={stampControls}
           initial={{ opacity: 0, scale: reducedMotion ? 1 : 1.6 }}
@@ -371,7 +370,6 @@ export const ProofSheet = forwardRef<ProofSheetHandle, Props>(
             bottom: '64px',
             pointerEvents: 'none',
             zIndex: 10,
-            display: allPassed ? 'block' : 'none',
           }}
         >
           <span style={{

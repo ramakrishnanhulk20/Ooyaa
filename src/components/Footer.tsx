@@ -58,7 +58,7 @@ export function Footer() {
       }} className="footer-inner">
 
         {/* Left: wordmark */}
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', flexShrink: 0 }}>
+        <Link to="/" className="footer-logo-link" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', flexShrink: 0 }}>
           <StampRing size={22} />
           <span style={{
             fontFamily: '"Fraunces Variable", Georgia, serif',
@@ -103,6 +103,7 @@ export function Footer() {
               href={`${ARC_MAINNET.explorer}/address/${ARC_MAINNET.factory}`}
               target="_blank"
               rel="noopener noreferrer"
+              className="footer-factory-link"
               style={{ color: 'var(--ink-3)', textDecoration: 'underline' }}
             >
               {shortFactory}

@@ -72,22 +72,22 @@ function CopyButton({ text }: { text: string }) {
 }
 
 export function ProofPage() {
-  const { report, checks, progress, status, error, rerun, streamedLedgers } = useProofReport();
+  const { report, checks, progress, status, error, rerun, streamedLedgers, payrollCount } = useProofReport();
   const sheetRef = useRef<ProofSheetHandle>(null);
   const stampFiredRef = useRef(false);
 
-  // After all 8 checks arrive and all pass, wait 300 ms then stamp VERIFIED.
+  // After the proof query succeeds and all merged checks pass, stamp VERIFIED.
   useEffect(() => {
     if (stampFiredRef.current) return;
-    if (checks.length < 8) return;
-    const allPassed = checks.every(c => c.status === 'PASS');
+    if (status !== 'success') return;
+    const allPassed = checks.length > 0 && checks.every(c => c.status === 'PASS');
     if (!allPassed) return;
     stampFiredRef.current = true;
     const t = setTimeout(() => {
       void sheetRef.current?.stampVerified();
     }, 300);
     return () => clearTimeout(t);
-  }, [checks]);
+  }, [status, checks]);
 
   // Reset stamp flag on rerun.
   function handleRerun() {
@@ -131,7 +131,7 @@ export function ProofPage() {
           alignItems: 'start',
         }} className="proof-header-grid">
 
-          {/* Left: headline -- min-width 0 prevents mono lines from blowing out the column. */}
+          {/* Left: headline. min-width 0 prevents mono lines from blowing out the column. */}
           <div style={{ minWidth: 0 }}>
             <div style={{
               fontFamily: '"IBM Plex Mono", monospace',
@@ -213,7 +213,7 @@ export function ProofPage() {
             </div>
           </div>
 
-          {/* Right: proof sheet -- min-width 0 so it never blows past the grid. */}
+          {/* Right: proof sheet. min-width 0 so it never blows past the grid. */}
           <div style={{ minWidth: 0 }}>
             <ProofSheet
               ref={sheetRef}
@@ -226,17 +226,18 @@ export function ProofPage() {
           </div>
         </div>
 
-        {/* 2. Totals band -- streams from onLedger; shows skeleton while loading. */}
+        {/* 2. Totals band: streams from onLedger; shows skeleton while loading. */}
         <TotalsBand
           ledgers={displayLedgers}
           factory={report?.factory ?? ''}
-          loading={isLoading && displayLedgers === undefined}
+          loading={isLoading}
+          payrollCount={payrollCount}
         />
 
-        {/* 3. Who pressed the button -- appears as soon as the first payroll streams. */}
+        {/* 3. Who pressed the button: appears as soon as the first payroll streams. */}
         {displayLedgers && <WalletList ledgers={displayLedgers} />}
 
-        {/* 4. Ledger -- streams from onLedger, uses snapshot block from report when done. */}
+        {/* 4. Ledger: streams from onLedger; uses snapshot block from report when done. */}
         {displayLedgers && (
           <LedgerTable
             ledgers={displayLedgers}

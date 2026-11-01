@@ -13,7 +13,7 @@
 // ---------------------------------------------------------------------------
 // Preview guard: all side effects are confined to the Studio preview iframe.
 // On the public site the page runs at top level (self === top) so none of the
-// instrumentation code runs -- no ethereum redefinition, no fetch patch, no
+// instrumentation code runs: no ethereum redefinition, no fetch patch, no
 // message listeners.  Exported helpers such as registerChain become no-ops.
 // A cross-origin parent throws on window.top access, which also means we are
 // framed, so we treat the exception as true.

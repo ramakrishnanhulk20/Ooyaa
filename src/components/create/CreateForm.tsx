@@ -325,6 +325,7 @@ export function CreateForm({ onDraftChange, onDone }: Props) {
               key={opt.seconds}
               type="button"
               onClick={() => setDraft(d => ({ ...d, periodSeconds: opt.seconds }))}
+              className="period-btn"
               style={{
                 height: '40px',
                 padding: '0 16px',

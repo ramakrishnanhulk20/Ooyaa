@@ -1,7 +1,7 @@
 /**
  * DraftPayroll: the form state for /new.
  * validateDraft runs before any signature and returns a list of field-level errors.
- * Everything here is pure -- no viem, no wagmi, no RPC.
+ * Everything here is pure: no viem, no wagmi, no RPC.
  */
 import { isAddress, getAddress } from 'viem';
 import type { Address } from 'viem';
@@ -160,7 +160,7 @@ export function validateDraft(draft: DraftPayroll, chainNow: bigint): DraftError
     errors.push({ field: 'period', message: 'Pick a pay period from 1 minute to 366 days.' });
   }
 
-  // Start time (skip validation when chainNow is 0 -- caller passed 0 to skip).
+  // Start time (skip validation when chainNow is 0: caller passed 0 to skip).
   if (chainNow > 0n) {
     const startTs = computeStartTime(draft, chainNow);
     if (startTs === null) {
@@ -253,7 +253,7 @@ export function saveDraft(draft: DraftPayroll): void {
   try {
     localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
   } catch {
-    // localStorage unavailable (private mode, storage full) -- silently ignore.
+    // localStorage unavailable (private mode, storage full): silently ignore.
   }
 }
 

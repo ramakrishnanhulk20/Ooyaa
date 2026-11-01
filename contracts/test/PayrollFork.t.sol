@@ -361,7 +361,7 @@ contract PayrollForkTest is Test {
     }
 
     // =========================================================================
-    // fork test 24: C35 -- PAYEE_TRANSFER_GAS (110,000) >= 2x real transfer cost.
+    // fork test 24: C35. PAYEE_TRANSFER_GAS (110,000) >= 2x real transfer cost.
     // Measured in run()'s exact context (balance read first, cold frame, --isolate):
     // 48,561 gas cold, 43,990 warm.  Half the budget (55,000) covers either case.
     // Proven with exact forwarded-gas limits via RunContextTransfer, so the result

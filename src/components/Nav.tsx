@@ -70,6 +70,7 @@ export function Nav() {
         {/* Wordmark */}
         <Link
           to="/"
+          className="nav-logo-link"
           style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}
         >
           <StampRing size={22} />
