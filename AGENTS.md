@@ -644,6 +644,15 @@ No contracts changed. No transactions. No deployments.
 
 ---
 
+## Turn 29g (Restore the hero word gaps)
+
+No contracts changed. No transactions. No deployments.
+
+### Key changes
+- `src/components/Hero.tsx`: word span `marginRight` changed from `'0.05em'` back to `'0.25em'`. The space text inside the span was being collapsed to zero width by the browser; the right-margin is what produces the visible inter-word gap. At 112px font size 0.25em = 28px; at 56px it is 14px, matching the live site.
+
+---
+
 ## Turn 29f (Run again starts from a clean proof sheet)
 
 No contracts changed. No transactions. No deployments.

@@ -174,7 +174,7 @@ export function Hero() {
                 initial={reducedMotion ? {} : { opacity: 0, y: 24 }}
                 animate={animate ? { opacity: 1, y: 0 } : (reducedMotion ? {} : { opacity: 0, y: 24 })}
                 transition={{ duration: 0.52, ease: EASING, delay: wordDelay(i) }}
-                style={{ display: 'inline-block', marginRight: '0.05em' }}
+                style={{ display: 'inline-block', marginRight: '0.25em' }}
               >
                 {word}{i < words.length - 1 ? ' ' : ''}
               </motion.span>
