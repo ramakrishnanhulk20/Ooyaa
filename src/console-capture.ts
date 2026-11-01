@@ -16,6 +16,17 @@
  * Built with Arc Studio: https://studio.arc.io
  */
 
+// ---------------------------------------------------------------------------
+// Preview guard: console capture runs only inside the Studio preview iframe.
+// On the public site (self === top) nothing is patched -- no console wrapping,
+// no error listeners, no postMessage to a parent frame.
+// A cross-origin parent throws on window.top access; treat that as framed.
+// ---------------------------------------------------------------------------
+
+const IN_STUDIO_PREVIEW = (() => {
+  try { return window.self !== window.top; } catch { return true; }
+})();
+
 type ConsoleLevel = 'log' | 'info' | 'warn' | 'error' | 'debug';
 
 interface ConsoleLogEntry {
@@ -208,55 +219,59 @@ function isNoise(message: string): boolean {
 // console.* patching
 // ---------------------------------------------------------------------------
 
-for (const level of LEVELS) {
-  const original = console[level].bind(console);
+if (IN_STUDIO_PREVIEW) {
+  for (const level of LEVELS) {
+    const original = console[level].bind(console);
 
-  console[level] = (...args: unknown[]): void => {
-    original(...args);
+    console[level] = (...args: unknown[]): void => {
+      original(...args);
 
-    try {
-      const message = truncate(args.map(formatArg).join(' '));
+      try {
+        const message = truncate(args.map(formatArg).join(' '));
 
-      if (message && !isNoise(message)) {
-        emit({ level, message, timestamp: Date.now(), stack: firstErrorStack(args) });
+        if (message && !isNoise(message)) {
+          emit({ level, message, timestamp: Date.now(), stack: firstErrorStack(args) });
+        }
+      } catch {
+        /* never let capture break the app's logging */
       }
-    } catch {
-      /* never let capture break the app's logging */
-    }
-  };
+    };
+  }
 }
 
 // ---------------------------------------------------------------------------
 // Uncaught errors and unhandled rejections: the signals a blank preview hides
 // ---------------------------------------------------------------------------
 
-window.addEventListener('error', (e: ErrorEvent) => {
-  try {
-    flushRepeat();
-    const source = e.filename ? `${e.filename}:${e.lineno ?? 0}:${e.colno ?? 0}` : undefined;
-    post({
-      level: 'error',
-      message: truncate(e.message || 'Uncaught error'),
-      timestamp: Date.now(),
-      source,
-      stack: e.error instanceof Error ? truncateStack(e.error.stack) : undefined,
-    });
-  } catch {
-    /* ignore */
-  }
-});
+if (IN_STUDIO_PREVIEW) {
+  window.addEventListener('error', (e: ErrorEvent) => {
+    try {
+      flushRepeat();
+      const source = e.filename ? `${e.filename}:${e.lineno ?? 0}:${e.colno ?? 0}` : undefined;
+      post({
+        level: 'error',
+        message: truncate(e.message || 'Uncaught error'),
+        timestamp: Date.now(),
+        source,
+        stack: e.error instanceof Error ? truncateStack(e.error.stack) : undefined,
+      });
+    } catch {
+      /* ignore */
+    }
+  });
 
-window.addEventListener('unhandledrejection', (e: PromiseRejectionEvent) => {
-  try {
-    flushRepeat();
-    const reason: unknown = e.reason;
-    post({
-      level: 'error',
-      message: truncate(`Unhandled promise rejection: ${formatArg(reason)}`),
-      timestamp: Date.now(),
-      stack: reason instanceof Error ? truncateStack(reason.stack) : undefined,
-    });
-  } catch {
-    /* ignore */
-  }
-});
+  window.addEventListener('unhandledrejection', (e: PromiseRejectionEvent) => {
+    try {
+      flushRepeat();
+      const reason: unknown = e.reason;
+      post({
+        level: 'error',
+        message: truncate(`Unhandled promise rejection: ${formatArg(reason)}`),
+        timestamp: Date.now(),
+        stack: reason instanceof Error ? truncateStack(reason.stack) : undefined,
+      });
+    } catch {
+      /* ignore */
+    }
+  });
+}

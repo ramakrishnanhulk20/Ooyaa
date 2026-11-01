@@ -598,7 +598,26 @@ No contracts changed. No transactions. No deployments.
 - `prompts/*.md` (55 files): Studio build log committed.
 
 ### Test counts after turn 25
-- App tests: see check run (228+ expected, new gas estimate tests TBD)
+- App tests: 231/231 pass (228 existing + 3 new gas estimate gate tests)
+- bun run build: exit 0
+
+---
+
+## Turn 26 (Studio tracing confined to preview iframe)
+
+No contracts changed. No transactions. No deployments.
+
+### Edited files
+- `src/tracing.ts`: added `IN_STUDIO_PREVIEW` guard at top; all side effects (fetch patch, ethereum defineProperty, EIP-6963 listener, message listener, setupTraceAPI, log init) only run when inside the preview iframe; `registerChain` is a no-op outside.
+- `src/console-capture.ts`: added `IN_STUDIO_PREVIEW` guard; console patching loop and both window event listeners only run when inside the preview iframe.
+
+### Why
+tracing.ts called `Object.defineProperty(window, 'ethereum', ...)` on every page load, even on the public Vercel site. Console-capture wrapped every `console.*` call site-wide. Neither does anything useful outside the Arc Studio preview iframe, and the ethereum redefinition is a wallet-layer risk for public visitors.
+
+### Test counts after turn 26
+- App tests: 231/231 pass
+- tsc: clean
+- bun run build: exit 0
 
 ---
 

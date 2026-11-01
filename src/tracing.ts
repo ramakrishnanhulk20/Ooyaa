@@ -11,6 +11,19 @@
  */
 
 // ---------------------------------------------------------------------------
+// Preview guard: all side effects are confined to the Studio preview iframe.
+// On the public site the page runs at top level (self === top) so none of the
+// instrumentation code runs -- no ethereum redefinition, no fetch patch, no
+// message listeners.  Exported helpers such as registerChain become no-ops.
+// A cross-origin parent throws on window.top access, which also means we are
+// framed, so we treat the exception as true.
+// ---------------------------------------------------------------------------
+
+const IN_STUDIO_PREVIEW = (() => {
+  try { return window.self !== window.top; } catch { return true; }
+})();
+
+// ---------------------------------------------------------------------------
 // Types (inlined; sandbox can't use app module aliases)
 // ---------------------------------------------------------------------------
 
@@ -132,7 +145,7 @@ function setupTraceAPI(): void {
   (window as unknown as { __studioTrace: StudioTraceAPI }).__studioTrace = api;
 }
 
-setupTraceAPI();
+if (IN_STUDIO_PREVIEW) setupTraceAPI();
 
 // ---------------------------------------------------------------------------
 // emitWithGroups: attaches current group ancestry to RPC/HTTP events
@@ -215,16 +228,18 @@ function parseChainId(raw: unknown): number {
 
 let _enabled = false;
 
-window.addEventListener('message', (e: MessageEvent<MessageData>) => {
-  if (e.source !== window.parent) {
-    return;
-  }
+if (IN_STUDIO_PREVIEW) {
+  window.addEventListener('message', (e: MessageEvent<MessageData>) => {
+    if (e.source !== window.parent) {
+      return;
+    }
 
-  if (e.data?.type === 'studio-trace-config') {
-    _enabled = !!e.data.enabled;
-    log('tracing', _enabled ? 'enabled' : 'disabled');
-  }
-});
+    if (e.data?.type === 'studio-trace-config') {
+      _enabled = !!e.data.enabled;
+      log('tracing', _enabled ? 'enabled' : 'disabled');
+    }
+  });
+}
 
 const NOISE = ['/_vite/', '/@vite/', '/@id/', '/node_modules/.vite/', 'chrome-extension://', 'localhost:5173'];
 
@@ -275,6 +290,7 @@ function learnChain(url: string, chainId: number): void {
 
 /** Pre-register a chain's RPC URL so events show the correct chain from the start. */
 export function registerChain(chainId: number, rpcUrl: string): void {
+  if (!IN_STUDIO_PREVIEW) return;
   learnChain(rpcUrl, chainId);
 }
 
@@ -343,7 +359,7 @@ function findResp(resps: JRPCRes[], reqId: unknown): JRPCRes | undefined {
 // Patch globalThis.fetch: captures viem http() transport + regular HTTP
 // ---------------------------------------------------------------------------
 
-try {
+if (IN_STUDIO_PREVIEW) try {
   const _fetch = globalThis.fetch;
   log('patching fetch');
 
@@ -473,7 +489,7 @@ function patchProvider(provider: EIP1193Provider | undefined): void {
   } catch { /* not all providers support .on() */ }
 }
 
-try {
+if (IN_STUDIO_PREVIEW) try {
   // Case 1: provider already exists
   const existingProvider = getEthereum();
   if (existingProvider) {
@@ -498,4 +514,4 @@ try {
   }));
 } catch (e) { log('EIP-1193 patch FAILED', e); }
 
-log('initialized');
+if (IN_STUDIO_PREVIEW) log('initialized');
