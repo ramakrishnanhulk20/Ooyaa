@@ -210,8 +210,12 @@ export const ProofSheet = forwardRef<ProofSheetHandle, Props>(
     const reducedMotion =
       typeof window !== 'undefined' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // Tracks whether the stamp animation has run so we can toggle
+    // visibility and aria-hidden without a second prop.
+    const [stampShown, setStampShown] = useState(false);
 
     const stampVerified = useCallback(async () => {
+      setStampShown(true);
       if (reducedMotion) {
         await stampControls.start({ opacity: 1, scale: 1, transition: { duration: 0 } });
         return;
@@ -262,20 +266,20 @@ export const ProofSheet = forwardRef<ProofSheetHandle, Props>(
           PROOF SHEET
         </div>
 
-        {/* Progress message while running */}
-        {status === 'loading' && progress && (
-          <div style={{
-            fontFamily: '"IBM Plex Mono", monospace',
-            fontSize: '0.75rem',
-            color: 'var(--ink-3)',
-            marginBottom: '16px',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}>
-            Check {Math.min(merged.length + 1, 8)} of 8: {progress}
-          </div>
-        )}
+        {/* Progress line: always in layout so the sheet height is stable.
+            Hidden after the run ends so no content shift when it clears. */}
+        <div style={{
+          fontFamily: '"IBM Plex Mono", monospace',
+          fontSize: '0.75rem',
+          color: 'var(--ink-3)',
+          marginBottom: '16px',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          visibility: status === 'loading' && progress ? 'visible' : 'hidden',
+        }}>
+          Check {Math.min(merged.length + 1, 8)} of 8: {progress || '\u00A0'}
+        </div>
 
         {/* Error state */}
         {status === 'error' && error && (
@@ -359,17 +363,21 @@ export const ProofSheet = forwardRef<ProofSheetHandle, Props>(
           </button>
         </div>
 
-        {/* VERIFIED stamp: always position:absolute so it never shifts adjacent rows.
-            Opacity and scale animate; display is never toggled. */}
+        {/* VERIFIED stamp: always position:absolute so it never shifts adjacent
+            rows. Hidden from AT and from text selection until the animation
+            runs, so "VERIFIED" does not appear in copy/paste before it is
+            earned. Opacity and scale animate; display is never toggled. */}
         <motion.div
           animate={stampControls}
           initial={{ opacity: 0, scale: reducedMotion ? 1 : 1.6 }}
+          aria-hidden={stampShown ? undefined : true}
           style={{
             position: 'absolute',
             right: '112px',
             bottom: '64px',
             pointerEvents: 'none',
             zIndex: 10,
+            visibility: stampShown ? 'visible' : 'hidden',
           }}
         >
           <span style={{

@@ -228,6 +228,17 @@ button:disabled {
   }
 }
 
+/* /proof headline info lines: taller min-height on mobile because the
+   text wraps to more lines at 375px than at 1440px. */
+@media (max-width: 767px) {
+  .proof-snapshot-line {
+    min-height: 3em !important;
+  }
+  .proof-attribution-line {
+    min-height: 4.5em !important;
+  }
+}
+
 /* Draft preview: fade-in animation for changed values. */
 @keyframes fade-in-value {
   from { opacity: 0.4; }

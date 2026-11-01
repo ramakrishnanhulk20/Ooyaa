@@ -644,6 +644,28 @@ No contracts changed. No transactions. No deployments.
 
 ---
 
+## Turn 29e (UX audit part 5: steady proof sheet, honest stamp, read-so-far label)
+
+No contracts changed. No transactions. No deployments.
+
+### Key changes
+- `src/components/proof/ProofSheet.tsx`:
+  - Progress line always rendered; `visibility: hidden` (not removed) when the run ends, so the 34px box stays in layout and the sheet never jumps.
+  - `stampShown` state added. `stampVerified()` sets it to true before animating. Until it fires, the stamp has `visibility: 'hidden'` and `aria-hidden={true}`, so "VERIFIED" is absent from screen readers and copy-paste before it is earned.
+- `src/pages/ProofPage.tsx`:
+  - Snapshot line gets class `proof-snapshot-line`, `lineHeight: 1.5`, `minHeight: '1.5em'` (3em on mobile via CSS).
+  - Attribution line gets class `proof-attribution-line`, `lineHeight: 1.5`, `minHeight: '3em'` (4.5em on mobile via CSS).
+  - `running={isLoading}` passed to TotalsBand.
+- `src/index.css`: `@media (max-width: 767px)` block for `proof-snapshot-line` (3em) and `proof-attribution-line` (4.5em).
+- `src/components/proof/TotalsBand.tsx`: `running` prop added. Caption uses `running` for the "Read so far: k of n" vs "Across n" toggle (previously used `loading`, which became false as soon as data streamed).
+
+### Test counts after turn 29e
+- App tests: 264/264 pass (unchanged)
+- tsc: clean
+- bun run build: exit 0
+
+---
+
 ## Turn 29d (UX audit part 4: VERIFIED across payrolls, full pending rows, streaming totals)
 
 No contracts changed. No transactions. No deployments.

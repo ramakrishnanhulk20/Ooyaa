@@ -129,11 +129,13 @@ type Props = {
   ledgers: StreamedLedger[] | undefined;
   factory: string;
   loading: boolean;
+  /** True while the proof query is still running; controls the band caption. */
+  running: boolean;
   /** Total payrolls found by the factory (set as soon as enumerate finishes). */
   payrollCount: number | null;
 };
 
-export function TotalsBand({ ledgers, factory, loading, payrollCount }: Props) {
+export function TotalsBand({ ledgers, factory, loading, running, payrollCount }: Props) {
   const bandRef = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
 
@@ -211,7 +213,7 @@ export function TotalsBand({ ledgers, factory, loading, payrollCount }: Props) {
               margin: 0,
               textAlign: 'center',
             }}>
-              {loading && payrollCount !== null
+              {running && payrollCount !== null
                 ? <>Read so far: {(ledgers ?? []).length} of {payrollCount} payroll{payrollCount === 1 ? '' : 's'} made by the factory{' '}</>
                 : <>Across {(ledgers ?? []).length} payroll{(ledgers ?? []).length === 1 ? '' : 's'} made by the factory{' '}</>
               }

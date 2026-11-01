@@ -171,30 +171,38 @@ export function ProofPage() {
             {/* Snapshot line + source attribution.
                 Both lines are reserved from first paint (minHeight) so the
                 content below does not shift when they fill in. */}
-            <div style={{
-              fontFamily: '"IBM Plex Mono", monospace',
-              fontSize: '0.8125rem',
-              color: 'var(--ink-3)',
-              marginBottom: '2px',
-              overflowWrap: 'anywhere',
-              minWidth: 0,
-              minHeight: '1.3em',
-            }}>
+            <div
+              className="proof-snapshot-line"
+              style={{
+                fontFamily: '"IBM Plex Mono", monospace',
+                fontSize: '0.8125rem',
+                color: 'var(--ink-3)',
+                marginBottom: '2px',
+                overflowWrap: 'anywhere',
+                minWidth: 0,
+                lineHeight: 1.5,
+                minHeight: '1.5em',
+              }}
+            >
               {isLoading
                 ? 'Reading Arc mainnet...'
                 : isSuccess && report
                   ? snapshotLine(report.snapshotBlock, report.snapshotTime)
                   : '\u00A0'}
             </div>
-            <div style={{
-              fontFamily: '"IBM Plex Mono", monospace',
-              fontSize: '0.8125rem',
-              color: 'var(--ink-3)',
-              marginBottom: '10px',
-              overflowWrap: 'anywhere',
-              minWidth: 0,
-              minHeight: '1.3em',
-            }}>
+            <div
+              className="proof-attribution-line"
+              style={{
+                fontFamily: '"IBM Plex Mono", monospace',
+                fontSize: '0.8125rem',
+                color: 'var(--ink-3)',
+                marginBottom: '10px',
+                overflowWrap: 'anywhere',
+                minWidth: 0,
+                lineHeight: 1.5,
+                minHeight: '3em',
+              }}
+            >
               {isSuccess && report
                 ? sourceAttributionLine(report.logSourceUsed)
                 : '\u00A0'}
@@ -231,6 +239,7 @@ export function ProofPage() {
           ledgers={displayLedgers}
           factory={report?.factory ?? ''}
           loading={isLoading && displayLedgers === undefined}
+          running={isLoading}
           payrollCount={payrollCount}
         />
 
