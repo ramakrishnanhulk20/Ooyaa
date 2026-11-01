@@ -33,6 +33,14 @@ const ARC_CHAIN_ID = ARC_MAINNET.chainId;
 
 export type PayrollCardHandle = {
   stampAll: (kind: StampKind) => void;
+  /**
+   * Programmatically trigger the card's Run payday button -- same simulate-first
+   * flow as clicking it. Does nothing when the card is already busy (checking,
+   * signing, or pending) so the hero button is safe to call without a guard.
+   */
+  press: () => void;
+  /** Flash a 2px --ink outline that fades over 900 ms to indicate where the action landed. */
+  highlight: () => void;
 };
 
 export type PayrollCardProps = {
@@ -168,6 +176,8 @@ export const PayrollCard = forwardRef<PayrollCardHandle, PayrollCardProps>(
       if (runState.kind === 'ready') alreadyPaidRef.current = false;
     }, [runState.kind]);
 
+    const cardDivRef = useRef<HTMLDivElement>(null);
+
     const stampAll = useCallback((kind: StampKind) => {
       slipRefs.current.forEach((r, i) => {
         if (!r) return;
@@ -175,7 +185,40 @@ export const PayrollCard = forwardRef<PayrollCardHandle, PayrollCardProps>(
       });
     }, []);
 
-    useImperativeHandle(ref, () => ({ stampAll }), [stampAll]);
+    // Highlight: pulse a 2px --ink outline that fades over 900 ms.
+    const highlightCard = useCallback(() => {
+      const el = cardDivRef.current;
+      if (!el) return;
+      el.style.outline = '2px solid var(--ink)';
+      el.style.outlineOffset = '2px';
+      el.style.transition = 'outline-color 900ms ease';
+      // Defer the fade so the browser paints the outline first.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          el.style.outlineColor = 'transparent';
+          setTimeout(() => {
+            el.style.outline = '';
+            el.style.outlineOffset = '';
+            el.style.transition = '';
+          }, 920);
+        });
+      });
+    }, []);
+
+    // The handle's press: no-op when the card is already mid-run.
+    const handlePress = useCallback(() => {
+      const busy = runState.kind === 'checking'
+        || runState.kind === 'signing'
+        || runState.kind === 'pending';
+      if (busy) return;
+      void pressRef.current();
+    }, [runState.kind]);
+
+    useImperativeHandle(ref, () => ({
+      stampAll,
+      press: handlePress,
+      highlight: highlightCard,
+    }), [stampAll, handlePress, highlightCard]);
 
     const secsToNext = cardState.kind === 'idle'
       ? Number(cardState.nextAt) - Number(nowChain)
@@ -494,6 +537,7 @@ export const PayrollCard = forwardRef<PayrollCardHandle, PayrollCardProps>(
 
     return (
       <div
+        ref={cardDivRef}
         style={{
           background: 'var(--slip)',
           border: '1px solid var(--rule)',

@@ -621,6 +621,22 @@ tracing.ts called `Object.defineProperty(window, 'ethereum', ...)` on every page
 
 ---
 
+## Turn 27 (hero button runs payday)
+
+No contracts changed. No transactions. No deployments.
+
+### Edited files
+- `src/components/PayrollCard.tsx`: added `press()` and `highlight()` to `PayrollCardHandle`; `handlePress` is a no-op when `runState.kind` is checking/signing/pending; `highlightCard` pulses a 2px `--ink` outline that fades over 900 ms; `cardDivRef` attached to card root div; all three exposed via `useImperativeHandle`.
+- `src/components/Hero.tsx`: replaced `scrollToCard` with `handleHeroButton`; scrolls only when button not fully in view; calls `cardRef.current.press()` and `cardRef.current.highlight()` immediately; focus move kept.
+- `src/components/payrollCardPress.test.ts`: new test file; 5 tests covering the busy guard (isBusy for checking/signing/pending, and that a second click while pending does not start a second run).
+
+### Test counts after turn 27
+- App tests: 236/236 pass
+- tsc: clean
+- bun run build: exit 0
+
+---
+
 ## Turn 21 (final polish: footer, C8, creation fast-path, card state, privacy disclosure, C2 empty-code fix, docs overflow, Foundry tests)
 
 No contracts changed. No transactions. No deployments.

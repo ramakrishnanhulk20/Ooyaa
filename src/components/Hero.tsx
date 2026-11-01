@@ -21,7 +21,7 @@ void shortAddr;
 
 /**
  * Hero section: left editorial copy, right live demo payroll card.
- * The "Run today's payday" button only scrolls/focuses the card's run button.
+ * The "Run today's payday" button triggers the card's run flow immediately.
  */
 export function Hero() {
   const cardRef = useRef<DemoPayrollCardHandle>(null);
@@ -69,13 +69,25 @@ export function Hero() {
     return () => clearTimeout(t);
   }, []);
 
-  function scrollToCard() {
+  function handleHeroButton() {
     const el = document.getElementById('run-payday');
-    if (!el) return;
-    const top = el.getBoundingClientRect().top + window.scrollY - 120;
-    window.scrollTo({ top, behavior: 'smooth' });
-    // Focus the button after scroll.
-    setTimeout(() => el.focus(), 500);
+
+    // Scroll into view if the button is not already fully visible.
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      const fullyVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
+      if (!fullyVisible) {
+        const top = rect.top + window.scrollY - 120;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+      // Focus the run button so keyboard users can take over.
+      setTimeout(() => el.focus(), 500);
+    }
+
+    // Trigger the run flow immediately -- no waiting for the scroll to finish.
+    cardRef.current?.press();
+    // Flash the card outline so the visitor sees where the action landed.
+    cardRef.current?.highlight();
   }
 
   // Stagger helpers for text entrance.
@@ -192,7 +204,7 @@ export function Hero() {
             transition={{ duration: 0.52, ease: EASING, delay: words.length * 0.06 + 0.2 }}
           >
             <button
-              onClick={scrollToCard}
+              onClick={handleHeroButton}
               style={{
                 height: '48px',
                 padding: '0 20px',
