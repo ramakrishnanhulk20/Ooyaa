@@ -256,7 +256,7 @@ export const PayrollCard = forwardRef<PayrollCardHandle, PayrollCardProps>(
       let line2: React.ReactNode;
 
       if (cardState.kind === 'underfunded') {
-        line1 = `This payroll needs ${formatUsdc(cardState.shortfall)} more USDC to pay the next payday`;
+        line1 = `This payroll needs ${formatUsdc(cardState.shortfall)} more to pay the next payday`;
       } else if (cardState.kind === 'due' && cardState.partialNote) {
         line1 = `Funded for ${String(cardState.partialNote.funded)} of the ${String(cardState.partialNote.total)} owed paydays`;
       } else {
@@ -420,7 +420,7 @@ export const PayrollCard = forwardRef<PayrollCardHandle, PayrollCardProps>(
         if (runState.reason === 'underfunded') {
           const bal = state ? formatUsdc(state.balance) : '';
           const owed = state ? formatUsdc(state.owed) : '';
-          return `This payroll owes ${owed} USDC and holds ${bal} USDC. Nothing was sent.`;
+          return `This payroll owes ${owed} and holds ${bal}. Nothing was sent.`;
         }
         const name = 'detail' in runState ? runState.detail || 'unknown' : 'unknown';
         return `The contract would refuse this run (${name}). Nothing was sent.`;
@@ -519,7 +519,7 @@ export const PayrollCard = forwardRef<PayrollCardHandle, PayrollCardProps>(
           const closedLine = cardState.closedNote
             ? ' This payroll is closed. Paydays that already started can still be run.'
             : '';
-          return `Nothing is skipped. Run one to pay the oldest waiting payday and keep the ${tip} USDC tip.${closedLine}`;
+          return `Nothing is skipped. Run one to pay the oldest waiting payday and keep the ${tip} tip.${closedLine}`;
         }
         const closedLine = cardState.closedNote
           ? ' This payroll is closed. Paydays that already started can still be run.'

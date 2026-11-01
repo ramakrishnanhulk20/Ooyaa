@@ -11,7 +11,7 @@ export default {
         slip:   'var(--slip)',
         ink:    'var(--ink)',
         'ink-2': 'var(--ink-2)',
-        'ink-3': 'var(--ink-3)',
+        'ink-3': 'var(--ink-3)', /* #666975 -- 5.01:1 on --paper */
         rule:   'var(--rule)',
         stamp:  'var(--stamp)',
         paid:   'var(--paid)',

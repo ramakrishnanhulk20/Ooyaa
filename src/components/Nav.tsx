@@ -123,7 +123,7 @@ export function Nav() {
                 onClick={show}
                 className="btn-secondary"
                 style={{
-                  height: '36px',
+                  height: '44px',
                   padding: '0 12px',
                   borderRadius: '8px',
                   fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
@@ -145,8 +145,8 @@ export function Nav() {
               background: 'none',
               border: '1px solid var(--rule)',
               borderRadius: '8px',
-              width: '36px',
-              height: '36px',
+              width: '44px',
+              height: '44px',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',

@@ -23,7 +23,7 @@ Transactions to open on [explorer.arc.io](https://explorer.arc.io):
 - Demo payroll funded with 1.5 USDC: [`0x07c16596...a4cd3e`](https://explorer.arc.io/tx/0x07c1659635188454406d6d7d46acc9beba1fe589384683bc2a4e0f0850a4cd3e), block 28273044.
 - First payday, which moved USDC to three payees and a tip to the runner: [`0x0692c42d...c07fec`](https://explorer.arc.io/tx/0x0692c42dd090bf022e41b9bb57d130ec6c1402615e0abb10d6ba9f1674c07fec), block 28281381. Its logs show three `PayslipIssued` events and one `PaydayRun`.
 
-One click: open the [proof page](/proof). It lists every USDC movement through every payroll made by the factory, each with a link to its transaction, and counts the distinct wallets. It marks each wallet that has run payday as OUTSIDE or OURS. A wallet is ours when it is the employer or a payee. When this page was written, one outside wallet had run 37 of the 38 paydays.
+One click: open the [proof page](/proof). It lists every USDC movement through every payroll made by the factory, each with a link to its transaction, and counts the distinct wallets. It marks each wallet that has run payday as OUTSIDE or OURS. A wallet is ours when it is the employer or a payee. On 1 Nov one outside wallet had run most of the demo payroll's paydays; the first screen of the site shows the live count.
 
 One command: `bun run prove --payroll 0xf03714EA422237BCb5d1B0BDd40B4Ff22B13717A` re-reads the chain and prints each transaction link, the totals and the line `RESULT: 8 passed, 0 failed, 0 skipped`. See [Verify it yourself](/docs/verify).
 

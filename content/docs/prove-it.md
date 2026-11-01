@@ -57,7 +57,7 @@ Network: Arc Mainnet (chain 5042), snapshot block <block> (<time>)
 Factory: 0x18C7c54b0E521B7a34D79608ac8CfA91466eDc9b  https://explorer.arc.io/address/0x18C7c54b0E521B7a34D79608ac8CfA91466eDc9b
 ```
 
-Then each check, with its evidence indented under it:
+Then each check, with its evidence indented under it. This excerpt is from a run on 30 Oct; your numbers will be larger, and the C8 line now names the period and block it tested:
 
 ```text
 PASS  C2 same code on mainnet and testnet

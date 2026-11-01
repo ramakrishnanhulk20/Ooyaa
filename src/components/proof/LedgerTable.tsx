@@ -17,13 +17,8 @@ function formatUtcTime(ts: bigint): string {
   const h = d.getUTCHours().toString().padStart(2, '0');
   const m = d.getUTCMinutes().toString().padStart(2, '0');
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const today = new Date();
-  const sameDay =
-    d.getUTCFullYear() === today.getUTCFullYear() &&
-    d.getUTCMonth() === today.getUTCMonth() &&
-    d.getUTCDate() === today.getUTCDate();
-  const day = sameDay ? '' : `, ${d.getUTCDate()} ${months[d.getUTCMonth()]}`;
-  return `${h}:${m} UTC${day}`;
+  // Always include the date so the WHEN column is unambiguous across payslips.
+  return `${h}:${m} UTC, ${d.getUTCDate()} ${months[d.getUTCMonth()]}`;
 }
 
 // describeRow from rows.ts is the shared source of WHAT text across all pages.
@@ -225,7 +220,11 @@ export function LedgerTable({ ledgers, snapshotBlock, multiPayroll, onPayslipCli
                 transition={{ duration: 0.25, delay: reducedMotion ? 0 : Math.min(i % PAGE, PAGE - 1) * 0.03 }}
                 style={{ borderBottom: '1px solid var(--rule)', cursor: isClickable ? 'pointer' : 'default' }}
                 whileHover={{ background: 'var(--paper)' }}
+                role={isClickable ? 'button' : undefined}
+                tabIndex={isClickable ? 0 : undefined}
+                onKeyDown={isClickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPayslipClick(row, e.currentTarget); } } : undefined}
                 onClick={isClickable ? (e) => onPayslipClick(row, e.currentTarget) : undefined}
+                className={isClickable ? 'ledger-payslip-row' : ''}
               >
                 <td style={{ padding: '10px 16px 10px 72px', fontFamily: '"IBM Plex Mono", monospace', fontSize: '0.8125rem', color: 'var(--ink-2)', whiteSpace: 'nowrap' }}>
                   {row.time ? formatUtcTime(row.time) : `block ${row.blockNumber.toLocaleString()}`}
@@ -241,6 +240,11 @@ export function LedgerTable({ ledgers, snapshotBlock, multiPayroll, onPayslipCli
                 <td style={{ padding: '10px 16px', whiteSpace: 'nowrap' }}>{txLink(row.txHash, explorer)}</td>
                 {multiPayroll && (
                   <td style={{ padding: '10px 16px', whiteSpace: 'nowrap' }}>{addrLink(row.payroll, explorer)}</td>
+                )}
+                {isClickable && (
+                  <td style={{ padding: '10px 8px 10px 0', width: '20px' }}>
+                    <span className="row-chevron" aria-hidden="true" style={{ opacity: 0, transition: 'opacity 120ms', fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--ink-3)' }}>&#8250;</span>
+                  </td>
                 )}
               </motion.tr>
               );
@@ -325,6 +329,8 @@ export function LedgerTable({ ledgers, snapshotBlock, multiPayroll, onPayslipCli
       </div>
 
       <style>{`
+        .ledger-payslip-row:hover .row-chevron,
+        .ledger-payslip-row:focus-within .row-chevron { opacity: 1 !important; }
         @media (max-width: 767px) {
           .ledger-section { padding: 0 20px 48px !important; }
           .ledger-table-wrap { display: none !important; }

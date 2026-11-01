@@ -168,7 +168,24 @@ export function ProofPage() {
               Nothing here is typed in by us.
             </p>
 
-            {/* Snapshot line + source attribution */}
+            {/* Snapshot line + source attribution.
+                Both lines are reserved from first paint (minHeight) so the
+                content below does not shift when they fill in. */}
+            <div style={{
+              fontFamily: '"IBM Plex Mono", monospace',
+              fontSize: '0.8125rem',
+              color: 'var(--ink-3)',
+              marginBottom: '2px',
+              overflowWrap: 'anywhere',
+              minWidth: 0,
+              minHeight: '1.3em',
+            }}>
+              {isLoading
+                ? 'Reading Arc mainnet...'
+                : isSuccess && report
+                  ? snapshotLine(report.snapshotBlock, report.snapshotTime)
+                  : '\u00A0'}
+            </div>
             <div style={{
               fontFamily: '"IBM Plex Mono", monospace',
               fontSize: '0.8125rem',
@@ -176,25 +193,12 @@ export function ProofPage() {
               marginBottom: '10px',
               overflowWrap: 'anywhere',
               minWidth: 0,
+              minHeight: '1.3em',
             }}>
-              {isLoading
-                ? 'Reading Arc mainnet...'
-                : isSuccess && report
-                  ? snapshotLine(report.snapshotBlock, report.snapshotTime)
-                  : ''}
+              {isSuccess && report
+                ? sourceAttributionLine(report.logSourceUsed)
+                : '\u00A0'}
             </div>
-            {isSuccess && report && (
-              <div style={{
-                fontFamily: '"IBM Plex Mono", monospace',
-                fontSize: '0.8125rem',
-                color: 'var(--ink-3)',
-                marginBottom: '10px',
-                overflowWrap: 'anywhere',
-                minWidth: 0,
-              }}>
-                {sourceAttributionLine(report.logSourceUsed)}
-              </div>
-            )}
 
             {/* Copy run command */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>

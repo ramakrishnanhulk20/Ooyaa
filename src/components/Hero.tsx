@@ -174,9 +174,9 @@ export function Hero() {
                 initial={reducedMotion ? {} : { opacity: 0, y: 24 }}
                 animate={animate ? { opacity: 1, y: 0 } : (reducedMotion ? {} : { opacity: 0, y: 24 })}
                 transition={{ duration: 0.52, ease: EASING, delay: wordDelay(i) }}
-                style={{ display: 'inline-block', marginRight: '0.25em' }}
+                style={{ display: 'inline-block', marginRight: '0.05em' }}
               >
-                {word}
+                {word}{i < words.length - 1 ? ' ' : ''}
               </motion.span>
             ))}
           </h1>
@@ -256,6 +256,7 @@ export function Hero() {
                   </p>
                   <Link
                     to="/proof"
+                    className="hero-text-link"
                     style={{
                       fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
                       fontWeight: 500,
@@ -290,7 +291,7 @@ export function Hero() {
             <div style={{ marginTop: '10px' }}>
               <Link
                 to="/new"
-                className="hero-create-link"
+                className="hero-create-link hero-text-link"
                 style={{
                   fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
                   fontWeight: 500,

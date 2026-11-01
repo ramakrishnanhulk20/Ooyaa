@@ -240,7 +240,7 @@ function PayrollHeader({
               >
                 {employer}
               </a>
-              <span style={{ margin: '0 4px' }}>contract</span>
+              <span style={{ margin: '0 0 0 2px' }}>, contract</span>
               <a
                 href={`${explorerBase}/address/${getAddress(payroll)}`}
                 target="_blank"

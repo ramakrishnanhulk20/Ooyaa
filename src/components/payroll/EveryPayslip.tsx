@@ -135,6 +135,7 @@ export function EveryPayslip({ payroll, employer, fromBlock, onPayslipClick, onH
             <button
               key={f}
               onClick={() => setFilter(f)}
+              className="filter-chip"
               style={{
                 padding: '5px 12px',
                 borderRadius: '8px',
@@ -265,13 +266,8 @@ function fmtTime(ts: bigint | undefined, blockNum: bigint): string {
   const h = d.getUTCHours().toString().padStart(2, '0');
   const m = d.getUTCMinutes().toString().padStart(2, '0');
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const today = new Date();
-  const sameDay =
-    d.getUTCFullYear() === today.getUTCFullYear() &&
-    d.getUTCMonth() === today.getUTCMonth() &&
-    d.getUTCDate() === today.getUTCDate();
-  const day = sameDay ? '' : `, ${d.getUTCDate()} ${months[d.getUTCMonth()]}`;
-  return `${h}:${m} UTC${day}`;
+  // Always include the date so the WHEN column is unambiguous across payslips.
+  return `${h}:${m} UTC, ${d.getUTCDate()} ${months[d.getUTCMonth()]}`;
 }
 
 function fmtAmt(row: LedgerRow): string {
@@ -346,6 +342,9 @@ function PayrollLedgerTable({ rows, payroll, onPayslipClick }: TableProps) {
                     borderBottom: '1px solid var(--rule)',
                     cursor: isPayslip ? 'pointer' : 'default',
                   }}
+                  role={isPayslip ? 'button' : undefined}
+                  tabIndex={isPayslip ? 0 : undefined}
+                  onKeyDown={isPayslip ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPayslipClick(row, e.currentTarget); } } : undefined}
                   className={isPayslip ? 'payslip-row' : ''}
                 >
                   <td style={{ padding: '10px 16px', fontFamily: '"IBM Plex Mono", monospace', fontSize: '0.8125rem', color: 'var(--ink-2)', whiteSpace: 'nowrap' }}>
@@ -368,10 +367,15 @@ function PayrollLedgerTable({ rows, payroll, onPayslipClick }: TableProps) {
                     {fmtAmt(row)} USDC
                   </td>
                   <td style={{ padding: '10px 16px', whiteSpace: 'nowrap' }}>
-                    <a href={`${explorer}/tx/${row.txHash}`} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--ink)', fontFamily: '"IBM Plex Mono", monospace', fontSize: '0.8125rem', textDecoration: 'underline' }}>
+                    <a href={`${explorer}/tx/${row.txHash}`} target="_blank" rel="noopener noreferrer" className="ledger-tx-link" style={{ color: 'var(--ink)', fontFamily: '"IBM Plex Mono", monospace', fontSize: '0.8125rem', textDecoration: 'underline' }}>
                       {shortAddr(row.txHash)}
                     </a>
                   </td>
+                  {isPayslip && (
+                    <td style={{ padding: '10px 8px 10px 0', width: '20px' }}>
+                      <span className="row-chevron" aria-hidden="true" style={{ opacity: 0, transition: 'opacity 120ms', fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--ink-3)' }}>&#8250;</span>
+                    </td>
+                  )}
                 </tr>
               );
             })}
@@ -442,6 +446,8 @@ function PayrollLedgerTable({ rows, payroll, onPayslipClick }: TableProps) {
 
       <style>{`
         .payslip-row:hover { background: var(--paper); }
+        .payslip-row:hover .row-chevron,
+        .payslip-row:focus-within .row-chevron { opacity: 1 !important; }
         @media (max-width: 767px) {
           .payroll-table-wrap { display: none !important; }
           .payroll-mobile-list { display: block !important; }

@@ -8,9 +8,9 @@ async function initMermaid() {
   mermaid.initialize({
     startOnLoad: false,
     theme: 'base',
-    // flowchart.useMaxWidth false lets the diagram grow to its natural width
-    // inside the scrollable container; sequence diagrams keep fitting the column.
-    flowchart: { useMaxWidth: false },
+    // useMaxWidth true fits the diagram to the column at 1440px.
+    // On narrow viewports (<640px) the outer div scrolls horizontally.
+    flowchart: { useMaxWidth: true },
     themeVariables: {
       primaryColor: '#FFFFFF',
       primaryBorderColor: '#12193F',
@@ -80,10 +80,6 @@ export function MermaidBlock({ code }: Props) {
     );
   }
 
-  // Flowcharts need minWidth: max-content so the SVG can grow to its natural
-  // width and the outer overflowX: auto scrolls when narrower than the viewport.
-  const isFlowchart = /^\s*(flowchart|graph)\s/i.test(code);
-
   return (
     <div
       style={{
@@ -97,7 +93,7 @@ export function MermaidBlock({ code }: Props) {
     >
       <div
         ref={containerRef}
-        style={{ minWidth: isFlowchart ? 'max-content' : undefined, display: 'flex', justifyContent: 'center' }}
+        style={{ display: 'flex', justifyContent: 'center' }}
       />
     </div>
   );

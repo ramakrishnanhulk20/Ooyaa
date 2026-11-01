@@ -274,7 +274,7 @@ export const ProofSheet = forwardRef<ProofSheetHandle, Props>(
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
           }}>
-            {progress}
+            Check {Math.min(checks.length + 1, 8)} of 8 &mdash; {progress}
           </div>
         )}
 

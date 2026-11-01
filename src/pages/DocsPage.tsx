@@ -7,7 +7,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Nav } from '../components/Nav.js';
-import { Footer } from '../components/Footer.js';
 import { DocReader } from '../components/docs/DocReader.js';
 import { DocSearch } from '../components/docs/DocSearch.js';
 import { DOC_GROUPS, NAV_ORDER } from '../components/docs/nav.js';
@@ -417,19 +416,21 @@ export function DocsPage() {
               </div>
             ) : (
               <>
-                {/* Mobile on-this-page, under the h1 */}
+                {/* Page title h1 -- visible on all viewports */}
+                <h1 style={{
+                  fontFamily: '"Fraunces Variable", Georgia, serif',
+                  fontVariationSettings: '"opsz" 144, "SOFT" 0, "WONK" 0',
+                  fontWeight: 600,
+                  fontSize: '2.5rem',
+                  color: 'var(--ink)',
+                  marginBottom: '24px',
+                  lineHeight: 1.05,
+                }}>
+                  {doc.title}
+                </h1>
+
+                {/* Mobile: on-this-page dropdown, below the h1 */}
                 <div className="docs-otp-mobile" style={{ display: 'none' }}>
-                  <h1 style={{
-                    fontFamily: '"Fraunces Variable", Georgia, serif',
-                    fontVariationSettings: '"opsz" 144, "SOFT" 0, "WONK" 0',
-                    fontWeight: 600,
-                    fontSize: '2.5rem',
-                    color: 'var(--ink)',
-                    marginBottom: '24px',
-                    lineHeight: 1.05,
-                  }}>
-                    {doc.title}
-                  </h1>
                   <MobileOnThisPage headings={headings} />
                 </div>
 
@@ -461,8 +462,6 @@ export function DocsPage() {
           }}
         />
       )}
-
-      <Footer />
 
       <style>{`
         @media (max-width: 1023px) {

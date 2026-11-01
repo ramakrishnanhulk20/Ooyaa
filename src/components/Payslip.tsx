@@ -52,11 +52,13 @@ export const Payslip = forwardRef<PayslipHandle, PayslipProps>(
     const targetRotation = reducedMotion ? 0 : Number(rotation.replace('deg', ''));
     const entranceDelay = 0.3 + index * 0.09;
 
+    // Entrance animates only transform (y, rotate), never opacity.
+    // A translucent slip during entrance causes text overlap at the 1.5s mark.
     const initial = reducedMotion
-      ? { opacity: 1, y: 0, rotate: targetRotation }
-      : { opacity: 0, y: 32, rotate: 0 };
+      ? { y: 0, rotate: targetRotation }
+      : { y: 32, rotate: 0 };
     const animateState = animate
-      ? { opacity: 1, y: 0, rotate: targetRotation }
+      ? { y: 0, rotate: targetRotation }
       : initial;
 
     // R3: when no payee is provided, render skeleton bars instead of address/amount text.

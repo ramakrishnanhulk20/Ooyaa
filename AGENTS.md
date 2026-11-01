@@ -644,6 +644,35 @@ No contracts changed. No transactions. No deployments.
 
 ---
 
+## Turn 29b (UX audit part 2: contrast, focus, tap targets, docs, proof layout, link previews)
+
+No contracts changed. No transactions. No deployments.
+
+### Edited files
+- `src/index.css`: --ink-3 changed to #666975; :focus-visible rule added; #root gets 72px bottom padding at >=768px; tap-target CSS classes.
+- `tailwind.config.js`: comment updated to record new --ink-3 value.
+- `src/components/Hero.tsx`: word spans now include literal space for screen reader / copy-paste; hero-text-link class added to /new and /proof links.
+- `src/components/Nav.tsx`: mobile Connect and menu button raised to 44px.
+- `src/components/Payslip.tsx`: entrance animation opacity removed; only y and rotate animate.
+- `src/components/payroll/SlipDrawer.tsx`: close button raised to 44px.
+- `src/components/payroll/EveryPayslip.tsx`: filter chips get filter-chip class; payslip rows get role+tabindex+keyboard+chevron; fmtTime always includes date.
+- `src/components/proof/LedgerTable.tsx`: payslip rows get role+tabindex+keyboard+chevron; formatUtcTime always includes date.
+- `src/components/create/CreateForm.tsx`: Add a payee add-payee-btn class; fund-later-label class; formatUsdc double-USDC fixed.
+- `src/components/PayrollCard.tsx`: formatUsdc double-USDC fixed (underfunded line, refused-underfunded, waiting status tip).
+- `src/pages/DocsPage.tsx`: Footer removed (App.tsx already provides it); h1 shown on all viewports.
+- `src/components/docs/MermaidBlock.tsx`: flowchart useMaxWidth: true; minWidth max-content removed.
+- `src/pages/ProofPage.tsx`: snapshot + attribution lines reserved at first paint (minHeight 1.3em).
+- `src/components/proof/ProofSheet.tsx`: progress shows "Check N of 8 -- ...".
+- `index.html`: og:* and twitter:* meta tags added.
+- `src/pages/PayrollPage.tsx`: employer+contract line uses comma separator.
+
+### Test counts after turn 29b
+- App tests: 248/248 pass
+- tsc: clean
+- bun run build: exit 0
+
+---
+
 ## Turn 28 (C3 accepts payrolls made after launch by code identity)
 
 No contracts changed. No transactions. No deployments.

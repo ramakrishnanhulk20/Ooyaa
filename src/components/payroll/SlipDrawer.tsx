@@ -203,9 +203,14 @@ export function SlipDrawer({ payroll, startTime, periodLength, history, isOpen, 
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer',
-                  padding: '4px',
+                  padding: '12px',
                   color: 'var(--ink-3)',
                   lineHeight: 1,
+                  minWidth: '44px',
+                  minHeight: '44px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">

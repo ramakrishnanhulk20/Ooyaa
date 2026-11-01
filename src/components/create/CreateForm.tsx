@@ -306,7 +306,8 @@ export function CreateForm({ onDraftChange, onDone }: Props) {
           <button
             type="button"
             onClick={addPayee}
-            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontFamily: '"IBM Plex Sans", system-ui, sans-serif', fontWeight: 500, fontSize: '0.9375rem', color: 'var(--ink)', textDecoration: 'underline' }}
+            className="add-payee-btn"
+            style={{ background: 'none', border: 'none', padding: '10px 0', cursor: 'pointer', fontFamily: '"IBM Plex Sans", system-ui, sans-serif', fontWeight: 500, fontSize: '0.9375rem', color: 'var(--ink)', textDecoration: 'underline' }}
           >
             Add a payee
           </button>
@@ -438,13 +439,13 @@ export function CreateForm({ onDraftChange, onDone }: Props) {
                 }}
               />
               <span style={{ fontFamily: '"IBM Plex Sans", system-ui, sans-serif', fontSize: '0.9375rem', color: 'var(--ink-2)' }}>
-                paydays{totalFund !== null ? ` (${formatUsdc(totalFund)} USDC)` : ''}
+                paydays{totalFund !== null ? ` (${formatUsdc(totalFund)})` : ''}
               </span>
             </div>
             {fundErrors.map((m, k) => <FieldError key={k} message={m} />)}
           </>
         )}
-        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontFamily: '"IBM Plex Sans", system-ui, sans-serif', fontSize: '0.9375rem', color: 'var(--ink-2)', marginTop: draft.fundLater ? '0' : '8px' }}>
+        <label className="fund-later-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontFamily: '"IBM Plex Sans", system-ui, sans-serif', fontSize: '0.9375rem', color: 'var(--ink-2)', marginTop: draft.fundLater ? '0' : '8px' }}>
           <input
             type="checkbox"
             checked={draft.fundLater}
