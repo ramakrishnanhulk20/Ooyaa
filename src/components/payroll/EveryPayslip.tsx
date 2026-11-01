@@ -110,6 +110,7 @@ export function EveryPayslip({ payroll, employer, fromBlock, onPayslipClick, onH
         </div>
         <button
           onClick={downloadCsv}
+          disabled={status === 'loading'}
           className="btn-secondary"
           style={{
             height: '40px',
@@ -118,10 +119,11 @@ export function EveryPayslip({ payroll, employer, fromBlock, onPayslipClick, onH
             fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
             fontWeight: 500,
             fontSize: '0.875rem',
-            cursor: 'pointer',
+            cursor: status === 'loading' ? 'not-allowed' : 'pointer',
+            opacity: status === 'loading' ? 0.35 : 1,
           }}
         >
-          Download CSV ({filteredRows.length} rows)
+          {status === 'loading' ? 'Download CSV' : `Download CSV (${filteredRows.length} rows)`}
         </button>
       </div>
 

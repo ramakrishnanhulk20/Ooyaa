@@ -128,15 +128,6 @@ function PayrollSkeleton() {
   );
 }
 
-/** UTC date and time in "HH:MM UTC, D Mon" format for the creation line. */
-function creationTime(ts: bigint): string {
-  const d = new Date(Number(ts) * 1000);
-  const h = d.getUTCHours().toString().padStart(2, '0');
-  const m = d.getUTCMinutes().toString().padStart(2, '0');
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  return `${h}:${m} UTC, ${d.getUTCDate()} ${months[d.getUTCMonth()]}`;
-}
-
 function PayrollHeader({
   payroll,
   creationBlock,
@@ -148,16 +139,7 @@ function PayrollHeader({
 }) {
   const { state, isLoading } = usePayrollState(payroll);
   const cardRef = useRef<PayrollCardHandle>(null);
-
-  // Fetch the creation block timestamp, used for the "Created" line.
-  const { data: creationBlockData } = useQuery({
-    queryKey: ['blockTimestamp', String(creationBlock)],
-    queryFn: () => creationBlock !== null
-      ? mainnetClient.getBlock({ blockNumber: creationBlock })
-      : null,
-    enabled: creationBlock !== null,
-    staleTime: Infinity,
-  });
+  void creationBlock;
 
   function subLine(): string {
     if (!state || isLoading) return '';
@@ -219,7 +201,9 @@ function PayrollHeader({
           margin: '0 0 16px',
           overflowWrap: 'anywhere',
         }}>
-          {employer ? `Payroll of ${employer}` : 'Loading payroll...'}
+          {payroll.toLowerCase() === ARC_MAINNET.demoPayroll.toLowerCase()
+            ? 'Demo payroll'
+            : 'Payroll'}
         </h1>
 
         {!isLoading && state && (
@@ -234,7 +218,7 @@ function PayrollHeader({
           </p>
         )}
 
-        {/* Address + creation block line */}
+        {/* Employer + contract address line */}
         <div style={{
           fontFamily: '"IBM Plex Mono", monospace',
           fontSize: '0.8125rem',
@@ -243,25 +227,29 @@ function PayrollHeader({
           flexWrap: 'wrap' as const,
           alignItems: 'center',
           gap: '4px',
-          overflowWrap: 'anywhere',
           minWidth: 0,
         }}>
-          <span style={{ wordBreak: 'break-all' }}>{getAddress(payroll)}</span>
-          <CopyButton text={getAddress(payroll)} />
-          {creationBlock !== null && creationBlockData && (
+          {employer && (
             <>
-              <span style={{ margin: '0 4px' }}>|</span>
-              <span>
-                Created {creationTime(creationBlockData.timestamp)},{' '}
-                <a
-                  href={`${explorerBase}/block/${String(creationBlock)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: 'var(--ink-3)', textDecoration: 'underline' }}
-                >
-                  block {creationBlock.toLocaleString('en-US')}
-                </a>
-              </span>
+              <span>Employer</span>
+              <a
+                href={`${explorerBase}/address/${state?.employer ? getAddress(state.employer) : ''}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: 'var(--ink-3)', textDecoration: 'underline', wordBreak: 'break-all' }}
+              >
+                {employer}
+              </a>
+              <span style={{ margin: '0 4px' }}>contract</span>
+              <a
+                href={`${explorerBase}/address/${getAddress(payroll)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: 'var(--ink-3)', textDecoration: 'underline', wordBreak: 'break-all' }}
+              >
+                {shortAddress(getAddress(payroll))}
+              </a>
+              <CopyButton text={getAddress(payroll)} />
             </>
           )}
         </div>

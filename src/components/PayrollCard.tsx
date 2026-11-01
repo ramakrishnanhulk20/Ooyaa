@@ -229,9 +229,8 @@ export const PayrollCard = forwardRef<PayrollCardHandle, PayrollCardProps>(
       if (cardState.kind === 'closed') return 'Closed';
       if (cardState.kind === 'underfunded') return 'Out of funds';
       if (cardState.kind === 'due') {
-        return cardState.waiting === 1n
-          ? 'Payday due'
-          : `${String(cardState.waiting)} paydays due`;
+        if (cardState.waiting === 1n) return 'Payday due';
+        return `${String(cardState.waiting)} paydays waiting`;
       }
       if (secsToNext <= 0) return 'Payday due';
       return `Next payday in ${countdown(secsToNext)}`;
@@ -309,13 +308,14 @@ export const PayrollCard = forwardRef<PayrollCardHandle, PayrollCardProps>(
       return { kind: 'due' as const, dueAt: state?.startTime ?? 0n, nowChain };
     }
 
-    // Period index to pass to Payslip: the paid period when known (so
-    // periodLabel adds one and shows the right number), otherwise nextUnpaid.
+    // Period index to pass to Payslip.
+    // Due state: show the next unpaid period (nextUnpaid) -- the one about to be run.
+    // Idle state: show the last paid period (lastPaidPeriod = nextUnpaid - 1).
+    // Just-paid (runState): show the period that was just paid.
     function slipPeriodFor(): bigint {
       if (justPaidPeriod !== undefined) return justPaidPeriod;
-      if (paidPeriod !== null) return BigInt(paidPeriod);
-      // Default: nextUnpaid - 1 if loaded, else nextUnpaid (shows "due" state).
-      if (state && state.nextUnpaid > 0n) return state.nextUnpaid - 1n;
+      if (cardState.kind === 'idle' && paidPeriod !== null) return BigInt(paidPeriod);
+      // Due or loading: nextUnpaid is the period being shown as due.
       return state?.nextUnpaid ?? 0n;
     }
 
@@ -515,13 +515,16 @@ export const PayrollCard = forwardRef<PayrollCardHandle, PayrollCardProps>(
       }
       if (cardState.kind === 'due') {
         const tip = formatUsdc(state.tipPerRun);
-        const extra = cardState.waiting > 1n
-          ? ` ${String(cardState.waiting - 1n)} more paydays are waiting after this one.`
-          : '';
+        if (cardState.waiting > 1n) {
+          const closedLine = cardState.closedNote
+            ? ' This payroll is closed. Paydays that already started can still be run.'
+            : '';
+          return `Nothing is skipped. Run one to pay the oldest waiting payday and keep the ${tip} USDC tip.${closedLine}`;
+        }
         const closedLine = cardState.closedNote
           ? ' This payroll is closed. Paydays that already started can still be run.'
           : '';
-        return `Earn a ${tip} tip for running it.${extra}${closedLine}`;
+        return `Earn a ${tip} tip for running it.${closedLine}`;
       }
       return null;
     }

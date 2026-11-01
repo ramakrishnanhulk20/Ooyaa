@@ -158,3 +158,26 @@ test('nextUnpaid 0 with nothing started: idle, lastPaidPeriod null', () => {
     expect(cs.lastPaidPeriod).toBeNull();
   }
 });
+
+// Item 1: due state exposes nextUnpaid as the period to show; idle exposes lastPaidPeriod.
+test('due with nextUnpaid 79: period is 79 and dueAt is startTime + 79 * periodLength', () => {
+  // startedPeriods 80, nextUnpaid 79 => waiting 1.
+  const cs = deriveCardState(makeInput(
+    { startedPeriods: 80n, nextUnpaid: 79n },
+    { dueNow: true },
+  ));
+  expect(cs.kind).toBe('due');
+  if (cs.kind === 'due') {
+    expect(cs.period).toBe(79n);
+    const expectedDue = BASE_STATE.startTime + 79n * BASE_STATE.periodLength;
+    expect(cs.dueAt).toBe(expectedDue);
+  }
+});
+
+test('idle after index 78: lastPaidPeriod is 78', () => {
+  const cs = deriveCardState(makeInput({ nextUnpaid: 79n, startedPeriods: 79n }));
+  expect(cs.kind).toBe('idle');
+  if (cs.kind === 'idle') {
+    expect(cs.lastPaidPeriod).toBe(78n);
+  }
+});

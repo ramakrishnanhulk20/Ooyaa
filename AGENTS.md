@@ -621,6 +621,29 @@ tracing.ts called `Object.defineProperty(window, 'ethereum', ...)` on every page
 
 ---
 
+## Turn 29a (UX audit part 1: card truth, trust line, clearer copy)
+
+No contracts changed. No transactions. No deployments.
+
+### Edited files
+- `src/components/PayrollCard.tsx`: `slipPeriodFor` -- due state now returns `nextUnpaid` (the period about to be run); idle state returns `lastPaidPeriod`; just-paid returns the paid period. `headerStatus` -- n>1 now says "N paydays waiting". `statusLine` -- waiting > 1 says "Nothing is skipped. Run one to pay the oldest waiting payday and keep the X USDC tip."
+- `src/components/Hero.tsx`: button label changed to "Run a payday"; hero trust line replaced with Plex Sans 500 1.125rem --ink sentence + proof link; "Live on Arc mainnet" mono line kept below; `TEAM_WALLET_SET` imported and used to exclude team wallets from outside count.
+- `src/deployments.ts`: `ARC_MAINNET.teamWallets` added.
+- `src/proof/ourWallet.ts`: new file -- `TEAM_WALLET_SET` and `isOurWallet(address, ledger)` helper.
+- `src/proof/checks.ts`: `buildLedger` excludes `TEAM_WALLET_SET` from `outsideRunners`.
+- `src/components/proof/WalletList.tsx`: `collectRunners` uses `isOurWallet`; description text adds "or one of the team's own test wallets".
+- `src/components/create/CreateForm.tsx`: summary box says "confirm 3 wallet prompts ... approve USDC"; fund section label changed to "Put in USDC for ... paydays (N USDC)"; fund-later checkbox says "Fund later (nothing is paid until you add USDC)"; unused `fundLine` removed.
+- `src/pages/PayrollPage.tsx`: h1 shows "Demo payroll" for demoPayroll, "Payroll" for others; address row replaced with "Employer X, contract Y" mono line, both linked; `creationBlockData` query and `creationTime` helper removed.
+- `src/components/payroll/EveryPayslip.tsx`: CSV button disabled (opacity 0.35) while history is loading; shows "Download CSV" (no row count) while loading.
+- `src/components/payroll/SlipDrawer.tsx`: slip rendering area gets 24px padding on all sides; detail area top padding set to 0 (already has 24px from slip area below).
+
+### Test counts after turn 29a
+- App tests: 248/248 pass
+- tsc: clean
+- bun run build: exit 0
+
+---
+
 ## Turn 28 (C3 accepts payrolls made after launch by code identity)
 
 No contracts changed. No transactions. No deployments.

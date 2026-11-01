@@ -1,6 +1,7 @@
 import { type Address, getAddress } from 'viem';
 import type { StreamedLedger } from '../../proof/useProofReport.js';
 import { ARC_MAINNET } from '../../deployments.js';
+import { isOurWallet } from '../../proof/ourWallet.js';
 
 function shortAddr(addr: string): string {
   return addr.slice(0, 6) + '...' + addr.slice(-4);
@@ -16,17 +17,21 @@ function collectRunners(ledgers: StreamedLedger[]): RunnerInfo[] {
   const seen = new Map<string, RunnerInfo>();
   // Count PaydayRun events per runner across all ledger histories.
   for (const l of ledgers) {
-    const outsideSet = new Set(l.ledger.outsideRunners.map(a => a.toLowerCase()));
     for (const ev of l.history.events) {
       if (ev.eventName !== 'PaydayRun') continue;
       const runner = (ev.args.runner as string | undefined) ?? '';
       if (!runner) continue;
       const low = runner.toLowerCase();
+      // Use isOurWallet so teamWallets, employer, and payees all count as ours.
+      const outside = !isOurWallet(low, l.ledger);
       const existing = seen.get(low);
       if (existing) {
         existing.runs += 1;
+        // A runner appearing across multiple ledgers stays outside only if
+        // it is outside in every ledger that knows about it.
+        if (!outside) existing.outside = false;
       } else {
-        seen.set(low, { address: getAddress(runner), outside: outsideSet.has(low), runs: 1 });
+        seen.set(low, { address: getAddress(runner), outside, runs: 1 });
       }
     }
   }
@@ -73,7 +78,7 @@ export function WalletList({ ledgers }: Props) {
         maxWidth: '54ch',
         lineHeight: 1.5,
       }}>
-        A wallet counts as ours when it is the employer or a payee of that payroll. Anyone else is outside, drawn by the tip.
+        A wallet counts as ours when it is the employer, a payee of that payroll, or one of the team's own test wallets. Anyone else is outside, drawn by the tip.
       </p>
 
       {outsideCount === 0 ? (

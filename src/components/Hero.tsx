@@ -6,7 +6,7 @@ import type { DemoPayrollCardHandle } from './DemoPayrollCard.js';
 import { ARC_MAINNET } from '../deployments.js';
 import { useHistory } from '../proof/useHistory.js';
 import { usePayrollState } from '../payroll/usePayrollState.js';
-import { formatUsdc } from '../payroll/format.js';
+import { TEAM_WALLET_SET } from '../proof/ourWallet.js';
 
 const FACTORY = ARC_MAINNET.factory;
 const EXPLORER = ARC_MAINNET.explorer;
@@ -52,7 +52,8 @@ export function Hero() {
       if (ev.eventName !== 'PaydayRun') continue;
       n++;
       const runner = ((ev.args.runner as string | undefined) ?? '').toLowerCase();
-      if (runner && runner !== employer && !payeeSet.has(runner)) k++;
+      // A runner is outside when it is not the employer, not a payee, and not a team wallet.
+      if (runner && runner !== employer && !payeeSet.has(runner) && !TEAM_WALLET_SET.has(runner)) k++;
     }
 
     if (n === 0) return null;
@@ -228,7 +229,7 @@ export function Hero() {
                 (e.currentTarget).style.transform = 'translateY(0)';
               }}
             >
-              Run today&apos;s payday
+              Run a payday
             </button>
           </motion.div>
 
@@ -239,10 +240,41 @@ export function Hero() {
             transition={{ duration: 0.52, ease: EASING, delay: words.length * 0.06 + 0.3 }}
             style={{ marginTop: '24px' }}
           >
+            {/* Reserve height while loading so layout does not jump. */}
+            <div style={{ minHeight: '3.5rem' }}>
+              {outsideRunLine && (
+                <>
+                  <p style={{
+                    fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
+                    fontWeight: 500,
+                    fontSize: '1.125rem',
+                    color: 'var(--ink)',
+                    margin: '0 0 4px',
+                    lineHeight: 1.4,
+                  }}>
+                    {outsideRunLine.k} of {outsideRunLine.n} paydays were run by wallets we do not control.
+                  </p>
+                  <Link
+                    to="/proof"
+                    style={{
+                      fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
+                      fontWeight: 500,
+                      fontSize: '1rem',
+                      color: 'var(--ink)',
+                      textDecoration: 'underline',
+                    }}
+                  >
+                    Re-check every cent live on the proof page
+                  </Link>
+                </>
+              )}
+            </div>
             <span style={{
               fontFamily: '"IBM Plex Mono", monospace',
               fontSize: '0.8125rem',
               color: 'var(--ink-3)',
+              marginTop: '10px',
+              display: 'block',
             }}>
               Live on Arc mainnet, factory{' '}
               <a
@@ -255,29 +287,6 @@ export function Hero() {
                 {FACTORY_SHORT}
               </a>
             </span>
-            {/* Reserve one line of height while loading so layout does not jump. */}
-            <div style={{ marginTop: '6px', minHeight: '1.25rem' }}>
-              {outsideRunLine && (
-                <Link
-                  to="/proof"
-                  style={{
-                    fontFamily: '"IBM Plex Mono", monospace',
-                    fontSize: '0.8125rem',
-                    color: 'var(--ink-2)',
-                    textDecoration: 'none',
-                    borderBottom: '1px solid transparent',
-                    transition: 'border-color 200ms ease',
-                    maxWidth: '100%',
-                    display: 'inline',
-                    overflowWrap: 'break-word',
-                  }}
-                  onMouseEnter={e => { (e.currentTarget).style.borderBottomColor = 'var(--ink-2)'; }}
-                  onMouseLeave={e => { (e.currentTarget).style.borderBottomColor = 'transparent'; }}
-                >
-                  {outsideRunLine.k} of the {outsideRunLine.n} paydays so far were run by wallets we do not control, for the {formatUsdc(outsideRunLine.tip)} tip.
-                </Link>
-              )}
-            </div>
             <div style={{ marginTop: '10px' }}>
               <Link
                 to="/new"

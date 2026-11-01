@@ -212,9 +212,6 @@ export function CreateForm({ onDraftChange, onDone }: Props) {
   const fundErrors = errorsFor(fieldErrors, 'fund');
 
   const totalFund = fundAmount(draft, draft.fundPaydays);
-  const fundLine = totalFund !== null
-    ? `${draft.fundPaydays} payday${draft.fundPaydays !== 1 ? 's' : ''}: ${formatUsdc(totalFund)}`
-    : '';
 
   // Validation errors from the machine (from the onchain simulation).
   const machineErrors: string[] = [];
@@ -424,23 +421,26 @@ export function CreateForm({ onDraftChange, onDone }: Props) {
         {!draft.fundLater && (
           <>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '6px' }}>
+              <span style={{ fontFamily: '"IBM Plex Sans", system-ui, sans-serif', fontSize: '0.9375rem', color: 'var(--ink-2)', flexShrink: 0 }}>
+                Put in USDC for
+              </span>
               <input
                 type="number"
                 min="1"
                 step="1"
                 value={draft.fundPaydays}
                 onChange={e => setDraft(d => ({ ...d, fundPaydays: Math.max(1, parseInt(e.target.value, 10) || 1) }))}
-                style={{ ...inputStyle, width: '100px' }}
+                style={{
+                  ...inputStyle,
+                  width: '80px',
+                  flexShrink: 0,
+                  color: 'var(--ink)',
+                }}
               />
               <span style={{ fontFamily: '"IBM Plex Sans", system-ui, sans-serif', fontSize: '0.9375rem', color: 'var(--ink-2)' }}>
-                paydays
+                paydays{totalFund !== null ? ` (${formatUsdc(totalFund)} USDC)` : ''}
               </span>
             </div>
-            {fundLine && (
-              <div style={{ fontFamily: '"IBM Plex Mono", monospace', fontSize: '0.8125rem', color: 'var(--ink-3)', marginBottom: '8px' }}>
-                {fundLine}
-              </div>
-            )}
             {fundErrors.map((m, k) => <FieldError key={k} message={m} />)}
           </>
         )}
@@ -451,7 +451,7 @@ export function CreateForm({ onDraftChange, onDone }: Props) {
             onChange={e => setDraft(d => ({ ...d, fundLater: e.target.checked }))}
             style={{ width: '16px', height: '16px', cursor: 'pointer' }}
           />
-          Fund later
+          Fund later (nothing is paid until you add USDC)
         </label>
       </section>
 
@@ -459,8 +459,8 @@ export function CreateForm({ onDraftChange, onDone }: Props) {
       <section style={{ marginBottom: '24px', background: 'var(--slip)', border: '1px solid var(--rule)', borderRadius: '8px', padding: '16px 20px' }}>
         <p style={{ fontFamily: '"IBM Plex Sans", system-ui, sans-serif', fontSize: '0.9375rem', color: 'var(--ink-2)', margin: '0 0 8px', lineHeight: 1.5 }}>
           {draft.fundLater
-            ? <>You will sign once: create the payroll.</>
-            : <>You will sign up to 3 times: create the payroll, allow {totalFund !== null ? formatUsdc(totalFund) : '...'}, fund it.</>
+            ? <>You will confirm 1 wallet prompt: create the payroll.</>
+            : <>You will confirm 3 wallet prompts: create the payroll, approve {totalFund !== null ? formatUsdc(totalFund) : 'USDC'}, fund it.</>
           }
         </p>
         <p style={{ fontFamily: '"IBM Plex Mono", monospace', fontSize: '0.8125rem', color: 'var(--ink-3)', margin: '0 0 8px', lineHeight: 1.5 }}>

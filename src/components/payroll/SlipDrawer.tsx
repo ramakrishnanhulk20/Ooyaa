@@ -215,7 +215,7 @@ export function SlipDrawer({ payroll, startTime, periodLength, history, isOpen, 
             </div>
 
             {/* Slip rendering area */}
-            <div style={{ padding: '0 24px 24px', position: 'relative', minHeight: '280px' }}>
+            <div style={{ padding: '24px', position: 'relative', minHeight: '280px' }}>
               <Payslip
                 ref={payslipRef}
                 period={row.period!}
@@ -229,7 +229,7 @@ export function SlipDrawer({ payroll, startTime, periodLength, history, isOpen, 
             </div>
 
             {/* Detail lines */}
-            <div style={{ padding: '12px 24px 24px', flex: 1 }}>
+            <div style={{ padding: '0 24px 24px', flex: 1 }}>
               {dueTs !== null && (
                 <DetailLine label="Due" value={fmtUtcFull(dueTs)} />
               )}

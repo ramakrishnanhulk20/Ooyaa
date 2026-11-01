@@ -3,6 +3,7 @@ import { formatUnits } from "viem";
 import type { PayrollHistory } from "./history.js";
 import type { parseEventLogs } from "viem";
 import type { payrollAbi } from "./abi.js";
+import { TEAM_WALLET_SET } from "./ourWallet.js";
 
 export type CheckStatus = "PASS" | "FAIL" | "SKIP";
 
@@ -408,7 +409,7 @@ function buildLedger(
   const allPayeeAddrs = new Set([...payeesPaidSet, ...deferredAddrSet, ...payeeAddedSet]);
 
   const outsideRunners = [...runnerSet].filter(
-    r => !pastEmployers.has(r) && !allPayeeAddrs.has(r),
+    r => !pastEmployers.has(r) && !allPayeeAddrs.has(r) && !TEAM_WALLET_SET.has(r),
   );
 
   const allWalletsSet = new Set([

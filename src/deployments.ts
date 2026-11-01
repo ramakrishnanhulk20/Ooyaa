@@ -12,6 +12,8 @@ export const ARC_MAINNET = {
   demoPayroll: "0xf03714EA422237BCb5d1B0BDd40B4Ff22B13717A" as Address,
   demoPayrollBlock: 28272851n,
   explorer: "https://explorer.arc.io",
+  // Our own test wallets. Runs by these addresses are "ours", not outside.
+  teamWallets: ["0x209AC4703EaDcfDee399E4542c81394366b4b9a6"] as Address[],
 } as const;
 
 export const ARC_TESTNET = {
