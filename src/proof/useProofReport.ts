@@ -11,12 +11,15 @@ import type { Address } from 'viem';
 export type ProofStatus = 'idle' | 'loading' | 'success' | 'error';
 
 /**
- * TanStack Query v5 uses 'pending' where v4 used 'loading' / 'idle'.
- * This function normalises the raw query status to the ProofStatus the UI
- * expects, so the cast `status as ProofStatus` is no longer needed.
+ * TanStack Query v5 keeps status 'success' during a refetch; fetchStatus
+ * becomes 'fetching' to signal the background re-run. Map either case to
+ * 'loading' so the UI resets correctly when "Run again" is pressed.
  */
-export function toProofStatus(s: 'pending' | 'error' | 'success'): ProofStatus {
-  if (s === 'pending') return 'loading';
+export function toProofStatus(
+  s: 'pending' | 'error' | 'success',
+  fetchStatus: 'fetching' | 'paused' | 'idle',
+): ProofStatus {
+  if (s === 'pending' || fetchStatus === 'fetching') return 'loading';
   return s;
 }
 
@@ -46,7 +49,7 @@ export function useProofReport() {
     setPayrollCount(null);
   }, []);
 
-  const { data: report, status, error } = useQuery<ProofReport, Error>({
+  const { data: report, status, fetchStatus, error } = useQuery<ProofReport, Error>({
     queryKey: ['proofReport'],
     queryFn: async () => {
       checksRef.current = [];
@@ -102,7 +105,7 @@ export function useProofReport() {
     progress,
     streamedLedgers,
     payrollCount,
-    status: toProofStatus(status),
+    status: toProofStatus(status, fetchStatus),
     error: error ?? null,
     rerun,
   };

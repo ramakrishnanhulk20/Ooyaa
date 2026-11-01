@@ -89,9 +89,10 @@ export function ProofPage() {
     return () => clearTimeout(t);
   }, [status, checks]);
 
-  // Reset stamp flag on rerun.
+  // Reset stamp flag and sheet stamp on rerun.
   function handleRerun() {
     stampFiredRef.current = false;
+    sheetRef.current?.resetStamp();
     rerun();
   }
 

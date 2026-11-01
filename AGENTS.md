@@ -644,6 +644,23 @@ No contracts changed. No transactions. No deployments.
 
 ---
 
+## Turn 29f (Run again starts from a clean proof sheet)
+
+No contracts changed. No transactions. No deployments.
+
+### Key changes
+- `src/proof/useProofReport.ts`: `toProofStatus(status, fetchStatus)` now takes both query values. Returns 'loading' when `status === 'pending'` OR `fetchStatus === 'fetching'`, so a TanStack Query v5 refetch (status stays 'success', fetchStatus becomes 'fetching') maps to 'loading' and the whole UI resets correctly.
+- `src/components/proof/ProofSheet.tsx`: `resetStamp()` exposed on the imperative handle. Calls `setStampShown(false)` and `stampControls.set(...)` to immediately hide the stamp and reset the framer animation position. Called from ProofPage's `handleRerun` before `rerun()`.
+- `src/pages/ProofPage.tsx`: `handleRerun` calls `sheetRef.current?.resetStamp()` before `rerun()`.
+- `src/proof/toProofStatus.test.ts`: updated with the four cases from the spec: ('success','fetching') -> 'loading'; ('pending','fetching') -> 'loading'; ('success','idle') -> 'success'; ('error','idle') -> 'error'.
+
+### Test counts after turn 29f
+- App tests: 266/266 pass (+2 from toProofStatus)
+- tsc: clean
+- bun run build: exit 0
+
+---
+
 ## Turn 29e (UX audit part 5: steady proof sheet, honest stamp, read-so-far label)
 
 No contracts changed. No transactions. No deployments.

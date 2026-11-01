@@ -15,6 +15,7 @@ const CHECK_TITLES: Record<string, string> = {
 
 export type ProofSheetHandle = {
   stampVerified: () => Promise<void>;
+  resetStamp: () => void;
 };
 
 type Props = {
@@ -210,8 +211,7 @@ export const ProofSheet = forwardRef<ProofSheetHandle, Props>(
     const reducedMotion =
       typeof window !== 'undefined' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    // Tracks whether the stamp animation has run so we can toggle
-    // visibility and aria-hidden without a second prop.
+    // Tracks whether the stamp animation has run at least once.
     const [stampShown, setStampShown] = useState(false);
 
     const stampVerified = useCallback(async () => {
@@ -227,7 +227,12 @@ export const ProofSheet = forwardRef<ProofSheetHandle, Props>(
       });
     }, [stampControls, reducedMotion]);
 
-    useImperativeHandle(ref, () => ({ stampVerified }), [stampVerified]);
+    const resetStamp = useCallback(() => {
+      setStampShown(false);
+      stampControls.set({ opacity: 0, scale: reducedMotion ? 1 : 1.6 });
+    }, [stampControls, reducedMotion]);
+
+    useImperativeHandle(ref, () => ({ stampVerified, resetStamp }), [stampVerified, resetStamp]);
 
     // Merge per-payroll results into one row per id before displaying.
     const merged = mergeChecks(checks);
